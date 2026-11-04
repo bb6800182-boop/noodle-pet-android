@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 與 DESIGN.md 的 token 同值（Compose 那邊在 ui/Theme.kt） -->
+    <color name="canvas">#010102</color>
+    <color name="surface1">#0F1011</color>
+    <color name="primary">#5E6AD2</color>
+    <color name="ink">#F7F8F8</color>
+    <color name="ink_muted">#D0D6E0</color>
+
+    <!-- 畫面由 Compose 處理；這裡只給啟動時的底色，避免白畫面閃一下 -->
+    <style name="Theme.Lamian" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/canvas</item>
+        <item name="android:colorAccent">@color/primary</item>
+    </style>
+
+    <!-- 系統的時間、日期選擇器：深色底、主色用 primary -->
+    <style name="Theme.Lamian.Dialog" parent="android:Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">@color/primary</item>
+        <item name="android:colorBackground">@color/surface1</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:textColorSecondary">@color/ink_muted</item>
+    </style>
+</resources>

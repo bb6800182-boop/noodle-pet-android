@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/primary" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <!-- 主題圖示：系統只取外形（透明度）再上色 -->
+    <monochrome android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>
