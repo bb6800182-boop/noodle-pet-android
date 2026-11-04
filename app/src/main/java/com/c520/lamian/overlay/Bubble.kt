@@ -10,6 +10,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -143,6 +145,7 @@ fun BubbleContent(s: BubbleState) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun BubbleBox(s: BubbleState) {
     val shape = RoundedCornerShape(T.rLg)
@@ -174,12 +177,20 @@ private fun BubbleBox(s: BubbleState) {
             }
         }
         if (!s.done) {
-            Row(Modifier.fillMaxWidth().padding(start = T.sMd, end = T.sMd, top = T.sSm, bottom = T.sMd), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(T.sXs)) {
+            // 放不下時整個按鈕換到下一行（大字體、「暫停 1 小時」這類較長的連結），不會被擠成直排；連結靠右
+            FlowRow(
+                Modifier.fillMaxWidth().padding(start = T.sMd, end = T.sMd, top = T.sSm, bottom = T.sMd),
+                horizontalArrangement = Arrangement.spacedBy(T.sXs),
+                verticalArrangement = Arrangement.spacedBy(T.sXs),
+            ) {
                 PrimaryButton(s.primary, onClick = s.onPrimary)
                 SecondaryButton(s.secondary, onClick = s.onSecondary)
-                Spacer(Modifier.weight(1f))
-                if (s.hasHowto) TextLink(if (s.stepsOpen) "收起步驟" else "怎麼做") { s.stepsOpen = !s.stepsOpen }
-                else s.link?.let { TextLink(it, onClick = s.onLink) }
+                val link = if (s.hasHowto) (if (s.stepsOpen) "收起步驟" else "怎麼做") else s.link
+                if (link != null) {
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+                        TextLink(link) { if (s.hasHowto) s.stepsOpen = !s.stepsOpen else s.onLink() }
+                    }
+                }
             }
         }
         if (s.hasHowto && s.stepsOpen && !s.done) {

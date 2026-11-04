@@ -56,7 +56,7 @@ fun PrimaryButton(text: String, modifier: Modifier = Modifier, enabled: Boolean 
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = T.sMd, vertical = T.sXs),
         contentAlignment = Alignment.Center,
-    ) { Text(text, style = T.button, color = if (enabled) T.onPrimary else T.inkSubtle) }
+    ) { Text(text, style = T.button, color = if (enabled) T.onPrimary else T.inkSubtle, maxLines = 1, softWrap = false) }
 }
 
 /** 次要動作：surface 底、hairline-strong 外框。 */
@@ -71,7 +71,7 @@ fun SecondaryButton(text: String, modifier: Modifier = Modifier, color: Color = 
             .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = T.sMd, vertical = T.sXs),
         contentAlignment = Alignment.Center,
-    ) { Text(text, style = T.button, color = color) }
+    ) { Text(text, style = T.button, color = color, maxLines = 1, softWrap = false) }
 }
 
 /** 文字按鈕（怎麼做、暫停 1 小時）。 */
@@ -80,7 +80,7 @@ fun TextLink(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Box(
         modifier.heightIn(min = T.touch).clip(RoundedCornerShape(T.rMd)).clickable(role = Role.Button, onClick = onClick).padding(horizontal = T.sXs),
         contentAlignment = Alignment.Center,
-    ) { Text(text, style = T.button, color = T.inkSubtle) }
+    ) { Text(text, style = T.button, color = T.inkSubtle, maxLines = 1, softWrap = false) }
 }
 
 /** 開關：關閉時 ink-subtle 外框與圓點（元件邊界 3:1），開啟時 primary 底、白圓點。 */

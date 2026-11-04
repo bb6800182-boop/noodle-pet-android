@@ -12,8 +12,8 @@ android {
         // 跟曆刻響一樣從 Android 13 起跳：通知權限、USE_EXACT_ALARM 都有，省掉舊版相容分支
         minSdk = 33
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
     }
 
     // 正式版簽章：金鑰路徑與密碼放在使用者的 ~/.gradle/gradle.properties（lamian.*），不進版控。

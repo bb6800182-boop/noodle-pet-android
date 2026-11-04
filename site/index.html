@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拉麵手機版｜會叫你起來動一動、喝水的 Android 提醒寵物</title>
+<meta name="description" content="手機上的提醒寵物：連續滑手機太久，麵條會從螢幕邊走出來，親自示範一組伸展、幫你計時；也會提醒你喝水，或照你設的時間說一句話。免費、開源，改寫自 Noodle 的非官方 Android 版。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="拉麵手機版｜會叫你起來動一動、喝水的 Android 提醒寵物">
+<meta property="og:description" content="滑手機太久了，麵條會走出來叫你動一動、喝口水，還會親自示範動作。免費、開源。">
+<meta property="og:url" content="https://c520.pages.dev/lamian-android/">
+<meta property="og:image" content="https://c520.pages.dev/lamian-android/icon-512.png">
+<link rel="canonical" href="https://c520.pages.dev/lamian-android/">
+<meta name="theme-color" content="#F7F8F8">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+/* 顏色、字級、間距、圓角取自 App 的 DESIGN.md（Linear 系），換成淺色版：C520 網站一律亮色，不跟著系統變深色。與 Windows 版拉麵的介紹頁同一套 */
+:root {
+  color-scheme: light;
+  --primary: #5E6AD2;
+  --primary-hover: #4F5AC2;
+  --on-primary: #FFFFFF;
+  --accent-text: #4B55C0;
+  --tint: #ECEDFA;
+  --canvas: #F7F8F8;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F2F4;
+  --hairline: #E4E6EA;
+  --hairline-strong: #D0D6E0;
+  --ink: #1B1C1E;
+  --ink-muted: #3C4149;
+  --ink-subtle: #62666D;
+  --font: "Segoe UI", "Microsoft JhengHei UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 20px;
+  --s-xl: 24px;
+  --s-xxl: 32px;
+  font: 400 15px/1.6 var(--font);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, h3, p, ol, ul, figure { margin: 0; }
+img { max-width: 100%; }
+a { color: var(--accent-text); text-underline-offset: 4px; }
+a:focus-visible, summary:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }
+.wrap { max-width: 960px; margin-inline: auto; padding-inline: var(--s-md); }
+.skip { position: absolute; left: 10px; top: 10px; z-index: 9; padding: 10px 16px; border-radius: 999px; background: var(--primary); color: var(--on-primary); transform: translateY(-200%); }
+.skip:focus { transform: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ic { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 頁首：回 C520 首頁、App 名稱、下載 */
+.top { display: flex; align-items: center; gap: var(--s-md); min-height: 64px; border-bottom: 1px solid var(--hairline); }
+.home { display: inline-flex; align-items: center; min-height: 44px; padding-right: var(--s-md); border-right: 1px solid var(--hairline-strong); font: 500 17px/1 Georgia, serif; font-variant-numeric: lining-nums; color: var(--ink-subtle); text-decoration: none; }
+.home:hover { color: var(--ink); }
+.brand { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; font-weight: 600; }
+.brand img { width: 32px; height: 32px; border-radius: 8px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid var(--primary); border-radius: 999px; background: var(--primary); color: var(--on-primary); font: 600 15px/1.2 var(--font); text-decoration: none; white-space: nowrap; }
+.btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+.btn.ghost { background: var(--surface-1); color: var(--ink); border-color: var(--hairline-strong); }
+.btn.ghost:hover { background: var(--surface-2); }
+.top .btn { min-height: 40px; padding: 0 16px; font-size: 14px; }
+
+/* 開場 */
+.hero { display: grid; grid-template-columns: auto 1fr; gap: var(--s-xxl); align-items: center; padding-block: 48px 40px; }
+.hero-art { display: grid; place-items: center; width: 184px; height: 184px; border-radius: 50%; background: var(--tint); }
+.hero-art img { width: 168px; height: 168px; }
+.eyebrow { color: var(--accent-text); font-size: 13px; font-weight: 600; letter-spacing: .5px; }
+h1 { margin-top: 6px; font-size: 40px; line-height: 1.2; font-weight: 700; letter-spacing: .5px; }
+.lead { margin-top: var(--s-sm); font-size: 20px; line-height: 1.5; color: var(--ink-muted); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--s-sm); margin-top: var(--s-xl); }
+.meta { margin-top: var(--s-sm); color: var(--ink-subtle); font-size: 13px; }
+
+/* 區塊 */
+section { padding-block: 36px; border-top: 1px solid var(--hairline); }
+h2 { font-size: 26px; line-height: 1.3; font-weight: 700; }
+.sub { margin-top: 6px; color: var(--ink-subtle); }
+.story { margin-top: var(--s-lg); padding: var(--s-xl); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); font-size: 17px; line-height: 1.8; }
+.story p + p { margin-top: var(--s-sm); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-sm); margin-top: var(--s-lg); }
+.card { padding: var(--s-lg); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); }
+.card .ic { color: var(--accent-text); }
+.card h3 { margin-top: 10px; font-size: 17px; line-height: 1.4; }
+.card p { margin-top: 4px; color: var(--ink-subtle); font-size: 14px; }
+
+/* 畫面：實機截圖（空白頁當背景、裁掉狀態列），加框才分得出圖和頁面 */
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s-md); align-items: start; margin-top: var(--s-lg); }
+.shots img { display: block; width: 100%; height: auto; border-radius: var(--r-lg); border: 1px solid var(--hairline-strong); background: var(--surface-1); }
+.shots figcaption { margin-top: var(--s-xs); color: var(--ink-muted); font-size: 14px; }
+
+/* 角色與動作示範（SVG 動畫） */
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: var(--s-sm); margin-top: var(--s-lg); padding: 0; list-style: none; }
+.figs li { display: flex; flex-direction: column; align-items: center; padding: var(--s-md) var(--s-xs); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); text-align: center; }
+.figs img { width: 104px; height: 104px; }
+.figs b { margin-top: 6px; font-size: 15px; }
+.figs span { color: var(--ink-subtle); font-size: 13px; }
+.note { margin-top: var(--s-sm); color: var(--ink-subtle); font-size: 13px; }
+
+/* 安裝步驟 */
+.steps { margin-top: var(--s-lg); padding: 0; list-style: none; counter-reset: s; display: grid; gap: var(--s-sm); }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 36px 1fr; gap: var(--s-sm); padding: var(--s-md) var(--s-lg); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 999px; background: var(--primary); color: var(--on-primary); font-weight: 700; }
+.steps b { display: block; }
+.steps span { display: block; color: var(--ink-subtle); font-size: 14px; }
+
+/* 常見問題 */
+details { margin-top: var(--s-sm); border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--hairline); }
+summary { display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm); min-height: 52px; padding: 0 var(--s-lg); cursor: pointer; font-weight: 600; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary .ic { transition: transform .15s; color: var(--ink-subtle); }
+details[open] summary .ic { transform: rotate(180deg); }
+.faq-a { padding: 0 var(--s-lg) var(--s-lg); color: var(--ink-muted); }
+.faq-a p + p { margin-top: 8px; }
+
+.foot { padding-block: var(--s-xxl); border-top: 1px solid var(--hairline); color: var(--ink-subtle); font-size: 13px; }
+.foot p + p { margin-top: 8px; }
+
+@media (max-width: 720px) {
+  .hero { grid-template-columns: 1fr; gap: var(--s-lg); padding-block: 32px; }
+  .hero-art { width: 128px; height: 128px; }
+  .hero-art img { width: 116px; height: 116px; }
+  h1 { font-size: 34px; }
+  .lead { font-size: 18px; }
+  .story { padding: var(--s-lg); font-size: 16px; }
+}
+@media (max-width: 400px) {
+  .brand span { display: none; }
+  .actions .btn { width: 100%; }
+  .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<svg class="defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
+  <symbol id="i-stretch" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="2"/><path d="M4.5 8.5 12 10l7.5-1.5M12 10v5.5m0 0-3 6m3-6 3 6"/></symbol>
+  <symbol id="i-water" viewBox="0 0 24 24"><path d="M6 4h12l-1.6 15.2a2 2 0 0 1-2 1.8H9.6a2 2 0 0 1-2-1.8L6 4Z"/><path d="M6.7 10.5h10.6"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-8 8H4l1.6-3A8 8 0 1 1 20 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></symbol>
+  <symbol id="i-quiet" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M22 10.5v3M6 10.5v3m3.5-3v3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<header class="wrap top">
+  <a class="home" href="/" aria-label="回 C520 首頁">C520</a>
+  <div class="brand"><img src="icon.svg" alt="" width="32" height="32"><span>拉麵手機版</span></div>
+  <a class="btn" href="https://github.com/bb6800182-boop/noodle-pet-android/releases/latest/download/lamian.apk">下載</a>
+</header>
+
+<main id="main" class="wrap" tabindex="-1">
+  <div class="hero">
+    <div class="hero-art"><img src="figures/rigatoni-wave.svg" alt="麵條 Toni（水管麵）笑著揮手打招呼" width="168" height="168"></div>
+    <div>
+      <p class="eyebrow">Android 提醒寵物</p>
+      <h1>拉麵手機版</h1>
+      <p class="lead">滑手機太久了，它會從螢幕邊走出來叫你動一動、喝口水，還會親自示範動作、幫你計時。</p>
+      <div class="actions">
+        <a class="btn" href="https://github.com/bb6800182-boop/noodle-pet-android/releases/latest/download/lamian.apk"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>下載（Android）</a>
+        <a class="btn ghost" href="https://github.com/bb6800182-boop/noodle-pet-android" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true"><use href="#i-code"/></svg>原始碼<span class="sr-only">（GitHub，另開分頁）</span></a>
+      </div>
+      <p class="meta">約 18 MB・Android 13 以上・<a href="https://github.com/bb6800182-boop/noodle-pet-android/releases" target="_blank" rel="noopener noreferrer">版本紀錄<span class="sr-only">（GitHub，另開分頁）</span></a><br>免費、MIT 開源・改寫自 Noodle 的非官方版本</p>
+    </div>
+  </div>
+
+  <section aria-labelledby="why">
+    <h2 id="why">為什麼做這個</h2>
+    <div class="story">
+      <p>原作是 <a href="https://www.instagram.com/_re_pete/" target="_blank" rel="noopener noreferrer">Pete Cybriwsky<span class="sr-only">（Instagram，另開分頁）</span></a> 的 <a href="https://tonitherigatoni.com/" target="_blank" rel="noopener noreferrer">Noodle<span class="sr-only">（另開分頁）</span></a>：一隻會提醒你起來伸展、還會親自示範動作的小麵條。</p>
+      <p>電腦前已經有 <a href="/lamian/">Windows 版的拉麵</a> 盯著，可是離開電腦、拿起手機，一滑又是半小時。拉麵手機版把麵條帶到手機上：平常不出現，連續滑太久，它就從螢幕邊走出來，帶你做一組伸展。</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="what">
+    <h2 id="what">會做什麼</h2>
+    <p class="sub">設定都在 App 的「設定」分頁，數字都能改，改了就自動存檔。</p>
+    <div class="grid">
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><h3>滑手機提醒</h3><p>螢幕亮著、解鎖了才算在用。連續滑 30 分鐘（可以改），麵條就從螢幕邊走出來；關螢幕 5 分鐘以上算休息過。沒空理它，它會自己走掉，30 分鐘內可以補做。</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-stretch"/></svg><h3>親自示範動作</h3><p>8 種伸展動作，麵條一邊示範、泡泡一邊說明，按「開始」幫你倒數。另有手腕、手指、看遠方 3 個新動作可以打開；動作能開關、改秒數、排順序。</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-water"/></svg><h3>喝水提醒</h3><p>預設 8:00 到 22:00 每 60 分鐘，麵條拿著杯子喝給你看，按「喝了」記一杯。照時鐘算，不管你有沒有在滑。</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><h3>自訂提醒</h3><p>每天、平日、自選星期或單次；時間到了麵條說一句話，也可以帶一組動作或提醒喝水。螢幕關著時改發通知，或等你解鎖再出來。</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-quiet"/></svg><h3>不擋畫面、不打擾</h3><p>平常隱藏，提醒時才出來；也可以貼在螢幕邊探頭，點一下出來打招呼。通話中先不出來，也能設安靜時段或暫停 1 小時。</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-battery"/></svg><h3>省電、不上網</h3><p>不在背景一直檢查，只在螢幕開關、解鎖、鬧鐘響時醒來；麵條收起來就整個移除。沒有網路權限，資料只存在手機裡。</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="shots">
+    <h2 id="shots">畫面</h2>
+    <p class="sub">提醒用對話泡泡出現在麵條上方，蓋在你正在用的 App 上面。</p>
+    <div class="shots">
+      <figure><img src="shots/nudge.png" alt="伸展提醒泡泡：現在做一組，8 個動作裡的第 2 個「門框伸展」，前臂靠在門框上、身體輕輕往前傾，30 秒；有「開始」「晚點」按鈕和「怎麼做」連結，麵條在泡泡下面靠著門框示範" width="600" height="670" loading="lazy"><figcaption>伸展提醒：這次做什麼、要多久</figcaption></figure>
+      <figure><img src="shots/timing.png" alt="跟著做的泡泡：今天第 2 組，門框伸展，倒數 0:27 和進度條；有「完成」「跳過」按鈕和「怎麼做」連結，麵條在泡泡下面示範" width="600" height="695" loading="lazy"><figcaption>跟著做：麵條示範、幫你倒數</figcaption></figure>
+      <figure><img src="shots/water.png" alt="喝水提醒泡泡：提醒・16:00，今天第 1 杯，喝口水吧！起來倒杯水，順便走一走、看看遠方；有「喝了」「晚點」按鈕，麵條拿著杯子在泡泡下面" width="600" height="606" loading="lazy"><figcaption>喝水提醒：按「喝了」記一杯</figcaption></figure>
+      <figure><img src="shots/visit.png" alt="打招呼的泡泡：拉麵 19:45，嗨！已經連續滑了 0 分鐘，再 30 分鐘提醒你動一動；有「現在做一組」「喝了一杯」按鈕和「暫停 1 小時」連結，麵條在泡泡下面揮手" width="600" height="692" loading="lazy"><figcaption>打招呼：看看滑了多久，也能先做一組</figcaption></figure>
+      <figure><img src="shots/edge.png" alt="螢幕右邊緣，麵條橫躺著探出頭，兩手扶著螢幕邊" width="400" height="300" loading="lazy"><figcaption>側邊探頭：點一下出來打招呼</figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="pets">
+    <h2 id="pets">挑一隻陪你</h2>
+    <p class="sub">五個角色，設定裡隨時可以換；也能選大小、站右下或左下，走出來或從上面垂降。</p>
+    <ul class="figs">
+      <li><img src="figures/rigatoni-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Toni</b><span>水管麵</span></li>
+      <li><img src="figures/spaghetti-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Sammy</b><span>直麵</span></li>
+      <li><img src="figures/penne-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Patty</b><span>筆管麵</span></li>
+      <li><img src="figures/lasagna-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Lenny</b><span>千層麵</span></li>
+      <li><img src="figures/sprout-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Sprout</b><span>小芽</span></li>
+    </ul>
+    <h3 class="sr-only">動作示範</h3>
+    <ul class="figs">
+      <li><img src="figures/rigatoni-neck-side.svg" alt="" width="104" height="104" loading="lazy"><b>頸側伸展</b><span>每邊 20 秒</span></li>
+      <li><img src="figures/rigatoni-doorway.svg" alt="" width="104" height="104" loading="lazy"><b>門框伸展</b><span>30 秒</span></li>
+      <li><img src="figures/rigatoni-t-ext.svg" alt="" width="104" height="104" loading="lazy"><b>胸椎伸展</b><span>10 下</span></li>
+      <li><img src="figures/rigatoni-calf-raise.svg" alt="" width="104" height="104" loading="lazy"><b>踮腳尖</b><span>20 下</span></li>
+      <li><img src="figures/rigatoni-drink.svg" alt="" width="104" height="104" loading="lazy"><b>喝水</b><span>拿杯子喝給你看</span></li>
+    </ul>
+    <p class="note">角色與伸展動作示範來自 Pete Cybriwsky 的 Noodle（MIT 授權）。喜歡這些角色的話，到 Pete 的 Instagram <a href="https://www.instagram.com/_re_pete/" target="_blank" rel="noopener noreferrer">@_re_pete<span class="sr-only">（另開分頁）</span></a> 看更多他的作品。</p>
+  </section>
+
+  <section aria-labelledby="install">
+    <h2 id="install">下載與安裝</h2>
+    <ol class="steps">
+      <li><div><b>用手機下載 lamian.apk</b><span>在電腦上看到這頁的話，把網址傳到手機上再打開。瀏覽器如果提醒這類檔案可能會損害裝置，選擇仍要下載。</span></div></li>
+      <li><div><b>允許安裝</b><span>點下載好的檔案。第一次從瀏覽器安裝 App，Android 會請你到「設定」打開「允許這個來源」，回來再按「安裝」。Google Play 安全防護如果跳出提醒，是因為它不是從 Play 商店安裝的，可以選擇繼續安裝。</span></div></li>
+      <li><div><b>打開拉麵，照首頁的提示允許</b><span>「顯示在其他應用程式上層」要到系統設定手動打開，麵條才能出現在其他 App 上面；「通知」按允許就好。部分品牌的手機，另外要在「設定 → 系統 → 電池用量」設成「不限制」，才不會被系統關掉。</span></div></li>
+      <li><div><b>試一下</b><span>在「今天」分頁按「現在做一組」，麵條會走出來帶你做一組伸展。</span></div></li>
+      <li><div><b>調成你習慣的樣子</b><span>「設定」改提醒間隔、喝水時段、角色和大小，平時要隱藏還是探頭；「提醒」分頁新增自訂提醒。</span></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="faq">
+    <h2 id="faq">常見問題</h2>
+    <details id="faq-env">
+      <summary>需要什麼環境？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>Android 13 以上的手機。不用登入，也不用另外安裝其他東西。</p></div>
+    </details>
+    <details id="faq-battery">
+      <summary>會很耗電嗎？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>不會。它不在背景一直檢查，只在螢幕開關、解鎖、鬧鐘響、通話狀態改變時醒來，連續使用的時間就用這幾個時間點算出來。麵條只在提醒時畫出來，收起來就整個移除；選「側邊探頭」才會一直留一張靜止的小圖。</p><p>通知列會一直有一則拉麵的通知：Android 規定要在背景持續執行的 App 都要顯示通知。上面有今天的次數，也能直接按「喝了一杯」「現在做一組」「暫停 1 小時」。</p></div>
+    </details>
+    <details id="faq-perm">
+      <summary>為什麼要這些權限？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>「顯示在其他應用程式上層」讓麵條和泡泡出現在其他 App 上面，沒打開的話改用通知提醒；「通知」用在常駐通知，以及螢幕關著或通話中的提醒；鬧鐘讓喝水和自訂提醒準時；開機後執行讓它開機自動啟動，設定裡可以關。</p><p>它不需要「使用情形存取」，不會讀其他 App 的內容，也沒有網路權限。</p></div>
+    </details>
+    <details id="faq-privacy">
+      <summary>資料存在哪裡？會上傳嗎？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>設定、自訂提醒和今天的紀錄都存在手機裡的 App 資料。App 沒有網路權限，不會上傳，也沒有使用統計。</p></div>
+    </details>
+    <details id="faq-off">
+      <summary>怎麼暫停或關掉？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>想休息一下，按泡泡、首頁或通知上的「暫停 1 小時」。</p><p>要完全關掉，到「設定」最上面把「開啟拉麵」關掉：不再提醒，常駐通知和麵條都收起來，開機也不會自己啟動；今天的紀錄會保留，之後打開就恢復。</p></div>
+    </details>
+    <details id="faq-update">
+      <summary>怎麼更新？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>回到這頁再下載一次 lamian.apk 直接安裝，會蓋過舊版，設定和紀錄都會保留。現在的版本號在「設定 → 關於」。</p></div>
+    </details>
+    <details id="faq-remove">
+      <summary>怎麼移除？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>長按拉麵的圖示，選「解除安裝」；或到系統的「設定 → 應用程式」找到拉麵移除。設定和紀錄會一起刪掉。</p></div>
+    </details>
+    <details id="faq-windows">
+      <summary>電腦上也能用嗎？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>可以，Windows 有 <a href="/lamian/">拉麵桌寵</a>。兩個是分開的 App，設定和紀錄不互通。</p></div>
+    </details>
+    <details id="faq-official">
+      <summary>這是官方的 Noodle 嗎？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>不是。拉麵手機版是非官方的 Android 改寫版，與 Noodle 原作者無關，也未經原作者背書。角色、動作示範與說明來自 Noodle（MIT 授權），兩份授權全文在 App 的「設定 → 關於 → 授權資訊」。</p></div>
+    </details>
+    <details id="faq-health">
+      <summary>伸展動作適合每個人嗎？<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>伸展動作只是一般的活動建議，不能取代醫療建議。做的時候覺得痛或不舒服就停下來；有傷病的話，請先問醫師或物理治療師。</p></div>
+    </details>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>隱私：不收集任何資料、沒有網路權限；設定與紀錄只存在你的手機。</p>
+  <p>角色、動作示範與說明來自 <a href="https://github.com/pcybriwsky/noodle" target="_blank" rel="noopener noreferrer">Noodle</a>（© 2026 <a href="https://www.instagram.com/_re_pete/" target="_blank" rel="noopener noreferrer">Pete Cybriwsky<span class="sr-only">（Instagram，另開分頁）</span></a>，MIT 授權）。拉麵手機版是非官方的 Android 改寫版，與原作者無關，也未經原作者背書。</p>
+  <p>伸展動作只是一般的活動建議，不能取代醫療建議。</p>
+  <p>本專案與 Google、Microsoft 沒有關係；Android、Google Play 是 Google LLC 的商標，Windows 是 Microsoft 的商標。</p>
+  <p>原始碼：<a href="https://github.com/bb6800182-boop/noodle-pet-android" target="_blank" rel="noopener noreferrer">GitHub</a>（MIT 授權）・聯絡：<a href="mailto:bb6800182@gmail.com">bb6800182@gmail.com</a></p>
+  <p><a href="/">更多作品</a></p>
+  <p>© 2026 C520</p>
+</footer>
+<script>
+// 連到某一題（例如 #faq-off）時自動展開那一題
+const openQ = id => { const d = document.getElementById(id); if (d && d.tagName === 'DETAILS') d.open = true; };
+document.querySelectorAll('a[href^="#faq-"]').forEach(a => a.addEventListener('click', () => openQ(a.hash.slice(1))));
+openQ(decodeURIComponent(location.hash.slice(1)));
+</script>
+</body>
+</html>
