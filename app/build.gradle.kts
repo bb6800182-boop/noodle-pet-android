@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -16,27 +18,19 @@ android {
         versionName = "0.1.2"
     }
 
-    // 正式版簽章：金鑰路徑與密碼放在使用者的 ~/.gradle/gradle.properties（lamian.*），不進版控。
-    // 沒有設定的電腦照樣能編 debug 版。
-    val releaseStore = providers.gradleProperty("lamian.storeFile").orNull
+    // 簽章放在專案資料夾旁邊的 noodle-pet-android-signing（不進版控；用 Dropbox 同步，每台電腦都用同一份）：
+    // 正式版的金鑰與密碼寫在 signing.properties；開發版用那裡的 debug.keystore，換一台電腦編的開發版也能直接更新手機上的 App。
+    // 沒有這個資料夾的電腦照樣能編 debug 版（用 Android 預設的 debug 金鑰），只是編不出簽好章的正式版。
+    val signingDir = rootDir.resolveSibling("noodle-pet-android-signing")
+    val signing = Properties().apply { signingDir.resolve("signing.properties").takeIf { it.isFile }?.reader()?.use { load(it) } }
     signingConfigs {
-        // debug 版兩台電腦共用同一把金鑰（signing/debug.keystore，跟著 Dropbox 同步、不進 git），
-        // 在哪台編出來的都能直接覆蓋安裝。沒有這個檔時照舊用各電腦自己的 ~/.android/debug.keystore。
-        val sharedDebug = rootProject.file("signing/debug.keystore")
-        if (sharedDebug.exists()) {
-            getByName("debug") {
-                storeFile = sharedDebug
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
-            }
-        }
-        if (releaseStore != null) {
+        signingDir.resolve("debug.keystore").takeIf { it.isFile }?.let { getByName("debug").storeFile = it }
+        signing.getProperty("storeFile")?.let { store ->
             create("release") {
-                storeFile = file(releaseStore)
-                storePassword = providers.gradleProperty("lamian.storePassword").get()
-                keyAlias = providers.gradleProperty("lamian.keyAlias").get()
-                keyPassword = providers.gradleProperty("lamian.keyPassword").get()
+                storeFile = signingDir.resolve(store)
+                storePassword = signing.getProperty("storePassword")
+                keyAlias = signing.getProperty("keyAlias")
+                keyPassword = signing.getProperty("keyPassword")
             }
         }
     }

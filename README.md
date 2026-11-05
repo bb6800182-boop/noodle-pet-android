@@ -47,8 +47,9 @@ gradlew.bat testDebugUnitTest
 
 - 專案放在 Dropbox 裡，編譯輸出改放 `%LOCALAPPDATA%\noodle-pet-android-build\`（見根目錄 `build.gradle.kts`），APK 在 `app\outputs\apk\debug\app-debug.apk`。
 - 安裝：手機開「USB 偵錯」接上電腦，`adb install -r --user 0 app-debug.apk`；或把 APK 傳到手機上點開安裝。
-- debug 版用專案裡的 `signing/debug.keystore` 簽章（跟著 Dropbox 同步、不進 git），兩台電腦編出來的 APK 可以直接互相覆蓋安裝。沒有這個檔時會退回各電腦自己的 `~/.android/debug.keystore`，那樣編出來的就不能覆蓋，要先移除舊版。
-- 正式版要自己的簽章金鑰：在使用者的 `~/.gradle/gradle.properties`（不是專案資料夾）加上 `lamian.storeFile`、`lamian.storePassword`、`lamian.keyAlias`、`lamian.keyPassword`，再 `gradlew.bat assembleRelease`。金鑰不要放進版控。
+- 簽章放在專案資料夾**旁邊**（不是裡面，才不會被 commit）的 `noodle-pet-android-signing` 資料夾，跟著 Dropbox 同步，兩台電腦共用：
+  - debug 版用那裡的 `debug.keystore`，兩台電腦編出來的 APK 可以直接互相覆蓋安裝。沒有這個檔時會退回各電腦自己的 `~/.android/debug.keystore`，那樣編出來的就不能覆蓋，要先移除舊版。
+  - 正式版要自己的簽章金鑰：把金鑰檔和 `signing.properties`（`storeFile`＝金鑰檔名、`storePassword`、`keyAlias`、`keyPassword`）放進那個資料夾，再 `gradlew.bat assembleRelease`。金鑰與密碼不要放進版控。
 
 ## 發布新版
 
