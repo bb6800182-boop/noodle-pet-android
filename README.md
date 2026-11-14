@@ -56,7 +56,7 @@ gradlew.bat testDebugUnitTest
 1. 升 `app/build.gradle.kts` 的 `versionCode`、`versionName`。
 2. 在有正式版金鑰的電腦執行 `gradlew.bat assembleRelease`，把輸出的 `app-release.apk` 複製成 `dist\lamian-版本號.apk`。
 3. 在 GitHub 的 Releases 建一筆新的 Release：tag 用 `v版本號`（例如 `v0.1.1`），附上 APK、檔名改成 `lamian.apk`，寫上更新內容和 APK 的 SHA-256（PowerShell：`Get-FileHash dist\lamian-版本號.apk`）。不要勾「Pre-release」，不然「最新版」的下載連結不會換到這一版。
-4. 介紹頁和 README 的下載按鈕都連到 `releases/latest/download/lamian.apk`，會自動拿到新版。介紹頁（`site/`，由 C520 專案的 `deploy.ps1` 跟其他作品一起部署）只有內容要改時才需要重新部署。
+4. README 的下載按鈕連到 `releases/latest/download/lamian.apk`，會自動拿到新版。介紹頁（`site/`，由 C520 專案的 `deploy.ps1` 跟其他作品一起部署）只有內容要改時才需要重新部署。
 
 正式版與 debug 版的簽章不同：手機上要換版本種類時，要先移除舊的。介紹頁的畫面（`site/shots/`）是實機截圖，背景用空白頁、裁掉狀態列，不放設定頁或任何個人資料。
 
