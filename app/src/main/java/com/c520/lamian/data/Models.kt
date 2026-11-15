@@ -115,7 +115,7 @@ data class AppState(
 /** 伸展、喝水、自訂提醒的「動作 id → 精靈圖動作名」：沒有專屬示範動畫的用 idle。 */
 val DEMO_POSES = setOf("chin-tuck", "doorway", "scap", "t-ext", "hip-flexor", "neck-side", "calf-raise", "walk")
 
-val CHARACTERS = listOf(
+val CHARACTERS get() = listOf(
     Triple("rigatoni", "Toni", L.t("水管麵", "Rigatoni")),
     Triple("spaghetti", "Sammy", L.t("直麵", "Spaghetti")),
     Triple("penne", "Patty", L.t("筆管麵", "Penne")),

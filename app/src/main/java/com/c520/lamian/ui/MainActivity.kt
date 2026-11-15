@@ -110,7 +110,7 @@ private fun strokeIcon(vararg paths: String): ImageVector = ImageVector.Builder(
     }
 }.build()
 
-private val TABS = listOf(
+private val TABS get() = listOf(
     Tab(L.t("今天", "Today"), strokeIcon("M4 11l8-7 8 7", "M6 10v10h12V10")),
     Tab(L.t("動作", "Exercises"), strokeIcon("M10 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M5 9l7 2 7-2M12 11v5l-3 5M12 16l3 5")),
     Tab(L.t("提醒", "Reminders"), strokeIcon("M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z", "M10 20a2 2 0 0 0 4 0")),

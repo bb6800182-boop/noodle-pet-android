@@ -1,4 +1,4 @@
-# 拉麵手機版 Lamian for Android（noodle-pet-android）v0.2.0
+# 拉麵手機版 Lamian for Android（noodle-pet-android）v0.2.1
 
 [English](#english)
 
