@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.c520.lamian.About
 import com.c520.lamian.BuildConfig
 import com.c520.lamian.data.ActorSize
 import com.c520.lamian.data.AppState
@@ -154,6 +155,8 @@ fun SettingsTab(st: AppState, perms: Perms, sprites: SpriteCache) {
         Group {
             SettingRow("版本", first = true) { Text("v${BuildConfig.VERSION_NAME}", style = T.bodySm, color = T.inkMuted) }
             SettingRow("授權資訊") { SecondaryButton("查看") { license = true } }
+            SettingRow("聯繫作者", About.CONTACT_TEXT) { SecondaryButton("寄信") { About.mail(context, "拉麵手機版", BuildConfig.VERSION_NAME) } }
+            SettingRow("更多軟體", About.MORE_TEXT) { SecondaryButton("前往") { About.more(context) } }
         }
         VSpace(T.sLg)
     }
