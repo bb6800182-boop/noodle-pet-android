@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lamian for Android | A reminder pet that gets you moving and drinking water</title>
+<meta name="description" content="A reminder pet for your phone: after too long on the screen, a little noodle walks in from the edge, demonstrates a stretch and times it for you. It also reminds you to drink water, or says a line at the time you set. Free and open source; an unofficial Android port of Noodle.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Lamian for Android | A reminder pet that gets you moving and drinking water">
+<meta property="og:description" content="Too long on your phone? The noodle walks out, gets you moving and drinking water, and shows you how. Free and open source.">
+<meta property="og:url" content="https://c520.pages.dev/lamian-android/en/">
+<meta property="og:image" content="https://c520.pages.dev/lamian-android/icon-512.png">
+<link rel="alternate" hreflang="zh-Hant" href="https://c520.pages.dev/lamian-android/">
+<link rel="alternate" hreflang="en" href="https://c520.pages.dev/lamian-android/en/">
+<link rel="canonical" href="https://c520.pages.dev/lamian-android/en/">
+<meta name="theme-color" content="#F7F8F8">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+:root {
+  color-scheme: light;
+  --primary: #5E6AD2;
+  --primary-hover: #4F5AC2;
+  --on-primary: #FFFFFF;
+  --accent-text: #4B55C0;
+  --tint: #ECEDFA;
+  --canvas: #F7F8F8;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F2F4;
+  --hairline: #E4E6EA;
+  --hairline-strong: #D0D6E0;
+  --ink: #1B1C1E;
+  --ink-muted: #3C4149;
+  --ink-subtle: #62666D;
+  --font: "Segoe UI", "Microsoft JhengHei UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 20px;
+  --s-xl: 24px;
+  --s-xxl: 32px;
+  font: 400 15px/1.6 var(--font);
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, h3, p, ol, ul, figure { margin: 0; }
+img { max-width: 100%; }
+a { color: var(--accent-text); text-underline-offset: 4px; }
+a:focus-visible, summary:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }
+.wrap { max-width: 960px; margin-inline: auto; padding-inline: var(--s-md); }
+.skip { position: absolute; left: 10px; top: 10px; z-index: 9; padding: 10px 16px; border-radius: 999px; background: var(--primary); color: var(--on-primary); transform: translateY(-200%); }
+.skip:focus { transform: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ic { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.top { display: flex; align-items: center; gap: var(--s-md); min-height: 64px; border-bottom: 1px solid var(--hairline); }
+.home { display: inline-flex; align-items: center; min-height: 44px; padding-right: var(--s-md); border-right: 1px solid var(--hairline-strong); font: 500 17px/1 Georgia, serif; font-variant-numeric: lining-nums; color: var(--ink-subtle); text-decoration: none; }
+.home:hover { color: var(--ink); }
+.brand { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; font-weight: 600; }
+.brand img { width: 32px; height: 32px; border-radius: 8px; }
+.lang { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--ink-subtle); font-size: 14px; text-decoration: none; }
+.lang:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border: 1px solid var(--primary); border-radius: 999px; background: var(--primary); color: var(--on-primary); font: 600 15px/1.2 var(--font); text-decoration: none; white-space: nowrap; }
+.btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+.btn.ghost { background: var(--surface-1); color: var(--ink); border-color: var(--hairline-strong); }
+.btn.ghost:hover { background: var(--surface-2); }
+.top .btn { min-height: 40px; padding: 0 16px; font-size: 14px; }
+
+.hero { display: grid; grid-template-columns: auto 1fr; gap: var(--s-xxl); align-items: center; padding-block: 48px 40px; }
+.hero-art { display: grid; place-items: center; width: 184px; height: 184px; border-radius: 50%; background: var(--tint); }
+.hero-art img { width: 168px; height: 168px; }
+.eyebrow { color: var(--accent-text); font-size: 13px; font-weight: 600; letter-spacing: .5px; }
+h1 { margin-top: 6px; font-size: 40px; line-height: 1.2; font-weight: 700; letter-spacing: .5px; }
+.lead { margin-top: var(--s-sm); font-size: 20px; line-height: 1.5; color: var(--ink-muted); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--s-sm); margin-top: var(--s-xl); }
+.meta { margin-top: var(--s-sm); color: var(--ink-subtle); font-size: 13px; }
+
+section { padding-block: 36px; border-top: 1px solid var(--hairline); }
+h2 { font-size: 26px; line-height: 1.3; font-weight: 700; }
+.sub { margin-top: 6px; color: var(--ink-subtle); }
+.story { margin-top: var(--s-lg); padding: var(--s-xl); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); font-size: 17px; line-height: 1.8; }
+.story p + p { margin-top: var(--s-sm); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-sm); margin-top: var(--s-lg); }
+.card { padding: var(--s-lg); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); }
+.card .ic { color: var(--accent-text); }
+.card h3 { margin-top: 10px; font-size: 17px; line-height: 1.4; }
+.card p { margin-top: 4px; color: var(--ink-subtle); font-size: 14px; }
+
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s-md); align-items: start; margin-top: var(--s-lg); }
+.shots img { display: block; width: 100%; height: auto; border-radius: var(--r-lg); border: 1px solid var(--hairline-strong); background: var(--surface-1); }
+.shots figcaption { margin-top: var(--s-xs); color: var(--ink-muted); font-size: 14px; }
+
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: var(--s-sm); margin-top: var(--s-lg); padding: 0; list-style: none; }
+.figs li { display: flex; flex-direction: column; align-items: center; padding: var(--s-md) var(--s-xs); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); text-align: center; }
+.figs img { width: 104px; height: 104px; }
+.figs b { margin-top: 6px; font-size: 15px; }
+.figs span { color: var(--ink-subtle); font-size: 13px; }
+.note { margin-top: var(--s-sm); color: var(--ink-subtle); font-size: 13px; }
+
+.steps { margin-top: var(--s-lg); padding: 0; list-style: none; counter-reset: s; display: grid; gap: var(--s-sm); }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 36px 1fr; gap: var(--s-sm); padding: var(--s-md) var(--s-lg); border-radius: var(--r-lg); background: var(--surface-1); border: 1px solid var(--hairline); }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 999px; background: var(--primary); color: var(--on-primary); font-weight: 700; }
+.steps b { display: block; }
+.steps span { display: block; color: var(--ink-subtle); font-size: 14px; }
+
+details { margin-top: var(--s-sm); border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--hairline); }
+summary { display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm); min-height: 52px; padding: 0 var(--s-lg); cursor: pointer; font-weight: 600; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary .ic { transition: transform .15s; color: var(--ink-subtle); }
+details[open] summary .ic { transform: rotate(180deg); }
+.faq-a { padding: 0 var(--s-lg) var(--s-lg); color: var(--ink-muted); }
+.faq-a p + p { margin-top: 8px; }
+
+.foot { padding-block: var(--s-xxl); border-top: 1px solid var(--hairline); color: var(--ink-subtle); font-size: 13px; }
+.foot p + p { margin-top: 8px; }
+
+@media (max-width: 720px) {
+  .hero { grid-template-columns: 1fr; gap: var(--s-lg); padding-block: 32px; }
+  .hero-art { width: 128px; height: 128px; }
+  .hero-art img { width: 116px; height: 116px; }
+  h1 { font-size: 34px; }
+  .lead { font-size: 18px; }
+  .story { padding: var(--s-lg); font-size: 16px; }
+}
+@media (max-width: 400px) {
+  .brand span { display: none; }
+  .actions .btn { width: 100%; }
+  .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<svg class="defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
+  <symbol id="i-stretch" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="2"/><path d="M4.5 8.5 12 10l7.5-1.5M12 10v5.5m0 0-3 6m3-6 3 6"/></symbol>
+  <symbol id="i-water" viewBox="0 0 24 24"><path d="M6 4h12l-1.6 15.2a2 2 0 0 1-2 1.8H9.6a2 2 0 0 1-2-1.8L6 4Z"/><path d="M6.7 10.5h10.6"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-8 8H4l1.6-3A8 8 0 1 1 20 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></symbol>
+  <symbol id="i-quiet" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M22 10.5v3M6 10.5v3m3.5-3v3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<header class="wrap top">
+  <a class="home" href="/en/" aria-label="C520 home">C520</a>
+  <div class="brand"><img src="../icon.svg" alt="" width="32" height="32"><span>Lamian for Android</span></div>
+  <a class="lang" href="../" lang="zh-Hant-TW" hreflang="zh-Hant-TW">中文</a>
+  <a class="btn" href="https://c520-dl.bb6800182.workers.dev/lamian-android/android">Download</a>
+</header>
+
+<main id="main" class="wrap" tabindex="-1">
+  <div class="hero">
+    <div class="hero-art"><img src="../figures/rigatoni-wave.svg" alt="Toni the rigatoni noodle smiling and waving" width="168" height="168"></div>
+    <div>
+      <p class="eyebrow">A reminder pet for Android</p>
+      <h1>Lamian for Android</h1>
+      <p class="lead">After too long on your phone, it walks in from the edge of the screen, gets you moving and drinking water, shows you the exercise and times it.</p>
+      <div class="actions">
+        <a class="btn" href="https://c520-dl.bb6800182.workers.dev/lamian-android/android"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Download (Android)</a>
+        <a class="btn ghost" href="https://github.com/bb6800182-boop/noodle-pet-android" target="_blank" rel="noopener noreferrer"><svg class="ic" aria-hidden="true"><use href="#i-code"/></svg>Source<span class="sr-only"> (GitHub, opens in a new tab)</span></a>
+      </div>
+      <p class="meta">About 18 MB · Android 13 or later · <a href="https://github.com/bb6800182-boop/noodle-pet-android/releases" target="_blank" rel="noopener noreferrer">Release notes<span class="sr-only"> (GitHub, opens in a new tab)</span></a><br>Free, MIT open source · an unofficial port of Noodle</p>
+    </div>
+  </div>
+
+  <section aria-labelledby="why">
+    <h2 id="why">Why I made it</h2>
+    <div class="story">
+      <p>The original is <a href="https://www.instagram.com/_re_pete/" target="_blank" rel="noopener noreferrer">Pete Cybriwsky<span class="sr-only"> (Instagram, opens in a new tab)</span></a> 's <a href="https://tonitherigatoni.com/" target="_blank" rel="noopener noreferrer">Noodle<span class="sr-only"> (opens in a new tab)</span></a>: a little noodle that reminds you to stretch and demonstrates the exercise itself.</p>
+      <p>At the computer, <a href="/lamian/en/">Lamian for Windows</a> already keeps an eye on me. But away from the desk I pick up my phone and half an hour is gone. Lamian for Android brings the noodle to the phone: it stays out of sight until you have been scrolling too long, then walks in from the edge and leads you through a stretch.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="what">
+    <h2 id="what">What it does</h2>
+    <p class="sub">Everything is on the app's Settings tab. All numbers can be changed and are saved automatically.</p>
+    <div class="grid">
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><h3>Screen-time reminders</h3><p>Only time with the screen on and unlocked counts. After 30 minutes in a row (adjustable) the noodle walks in from the edge; 5 minutes or more with the screen off counts as a break. If you ignore it, it leaves by itself and you can catch up within 30 minutes.</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-stretch"/></svg><h3>It shows you how</h3><p>Eight stretches: the noodle demonstrates while the bubble explains, and Start begins the countdown. Three more for wrists, fingers and eyes can be turned on. Exercises can be switched on and off, retimed and reordered.</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-water"/></svg><h3>Water reminders</h3><p>Every 60 minutes from 8:00 to 22:00 by default. The noodle drinks from a glass; tap “Drank it” to log one. It goes by the clock, whether or not you are on the phone.</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg><h3>Custom reminders</h3><p>Every day, weekdays, chosen days or once. At the set time the noodle says your line, and can also lead an exercise or a water break. With the screen off it sends a notification, or waits until you unlock.</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-quiet"/></svg><h3>Out of your way</h3><p>Hidden until a reminder is due, or peeking from the screen edge where a tap brings it out to say hi. It stays away during calls, and you can set quiet hours or pause for an hour.</p></div>
+      <div class="card"><svg class="ic" aria-hidden="true"><use href="#i-battery"/></svg><h3>Light on battery, offline</h3><p>No constant background checks: it wakes only when the screen turns on or off, on unlock, or when an alarm fires, and the noodle is removed completely when put away. No network permission; data stays on the phone.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="shots">
+    <h2 id="shots">Screens</h2>
+    <p class="sub">Reminders appear as a speech bubble above the noodle, on top of the app you are using. The screenshots show the Chinese interface; the app is in English on English phones.</p>
+    <div class="shots">
+      <figure><img src="../shots/nudge.png" alt="Stretch reminder bubble: exercise 2 of 8, the doorway stretch, 30 seconds, with Start and Later buttons and a How to link; below it the noodle demonstrates against a door frame" width="600" height="670" loading="lazy"><figcaption>Stretch reminder: what to do and for how long</figcaption></figure>
+      <figure><img src="../shots/timing.png" alt="Follow-along bubble: set 2 today, doorway stretch, a 0:27 countdown and progress bar, with Done and Skip buttons and a How to link; the noodle demonstrates below" width="600" height="695" loading="lazy"><figcaption>Follow along: the noodle demonstrates and counts down</figcaption></figure>
+      <figure><img src="../shots/water.png" alt="Water reminder bubble at 16:00: glass 1 today, have some water, with Drank it and Later buttons; the noodle holds a glass below" width="600" height="606" loading="lazy"><figcaption>Water reminder: tap “Drank it” to log a glass</figcaption></figure>
+      <figure><img src="../shots/visit.png" alt="Greeting bubble at 19:45: Hi! 0 minutes of screen time so far, a reminder comes in 30 minutes, with Stretch now and Had a glass buttons and a Pause 1 hour link; the noodle waves below" width="600" height="692" loading="lazy"><figcaption>Saying hi: see your screen time, or stretch right away</figcaption></figure>
+      <figure><img src="../shots/edge.png" alt="At the right edge of the screen, the noodle peeks in sideways, both hands on the edge" width="400" height="300" loading="lazy"><figcaption>Peeking from the side: tap to bring it out</figcaption></figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="pets">
+    <h2 id="pets">Pick your companion</h2>
+    <p class="sub">Five characters, switchable any time in Settings. You can also choose the size, bottom right or bottom left, and whether it walks in or drops from the top.</p>
+    <ul class="figs">
+      <li><img src="../figures/rigatoni-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Toni</b><span>Rigatoni</span></li>
+      <li><img src="../figures/spaghetti-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Sammy</b><span>Spaghetti</span></li>
+      <li><img src="../figures/penne-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Patty</b><span>Penne</span></li>
+      <li><img src="../figures/lasagna-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Lenny</b><span>Lasagna</span></li>
+      <li><img src="../figures/sprout-idle.svg" alt="" width="104" height="104" loading="lazy"><b>Sprout</b><span>Sprout</span></li>
+    </ul>
+    <h3 class="sr-only">Exercise demos</h3>
+    <ul class="figs">
+      <li><img src="../figures/rigatoni-neck-side.svg" alt="" width="104" height="104" loading="lazy"><b>Side neck stretch</b><span>20 sec each side</span></li>
+      <li><img src="../figures/rigatoni-doorway.svg" alt="" width="104" height="104" loading="lazy"><b>Doorway stretch</b><span>30 sec</span></li>
+      <li><img src="../figures/rigatoni-t-ext.svg" alt="" width="104" height="104" loading="lazy"><b>Upper back extension</b><span>10 reps</span></li>
+      <li><img src="../figures/rigatoni-calf-raise.svg" alt="" width="104" height="104" loading="lazy"><b>Calf raise</b><span>20 reps</span></li>
+      <li><img src="../figures/rigatoni-drink.svg" alt="" width="104" height="104" loading="lazy"><b>Water</b><span>Drinks from a glass</span></li>
+    </ul>
+    <p class="note">The characters and exercise demos come from Noodle by Pete Cybriwsky (MIT License). If you like them, see more of Pete's work on Instagram: <a href="https://www.instagram.com/_re_pete/" target="_blank" rel="noopener noreferrer">@_re_pete<span class="sr-only"> (opens in a new tab)</span></a> .</p>
+  </section>
+
+  <section aria-labelledby="install">
+    <h2 id="install">Download and install</h2>
+    <ol class="steps">
+      <li><div><b>Download lamian.apk on your phone</b><span>If you are reading this on a computer, send the address to your phone and open it there. If the browser warns that this type of file can harm your device, choose to download anyway.</span></div></li>
+      <li><div><b>Allow the install</b><span>Tap the downloaded file. The first time you install from a browser, Android asks you to turn on “Allow from this source” in Settings; come back and tap Install. If Google Play Protect shows a notice, that is because the app is not from the Play Store; you can choose to install anyway.</span></div></li>
+      <li><div><b>Open Lamian and grant what the home tab asks for</b><span>“Display over other apps” has to be turned on in system settings so the noodle can appear over other apps; for Notifications just tap Allow. On some brands, also set “Battery usage” to “Unrestricted” (in the app under Settings → System) so the system does not close it.</span></div></li>
+      <li><div><b>Try it</b><span>On the Today tab tap “Stretch now” and the noodle walks out to lead you through a stretch.</span></div></li>
+      <li><div><b>Make it yours</b><span>In Settings, change the reminder interval, water hours, character and size, and whether it hides or peeks when idle. Add custom reminders on the Reminders tab.</span></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="faq">
+    <h2 id="faq">Questions</h2>
+    <details id="faq-env">
+      <summary>What do I need?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>A phone with Android 13 or later. No sign-in and nothing else to install.</p></div>
+    </details>
+    <details id="faq-battery">
+      <summary>Does it drain the battery?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>No. It does not keep checking in the background; it wakes only when the screen turns on or off, on unlock, when an alarm fires or the call state changes, and works out your screen time from those moments. The noodle is drawn only during a reminder and removed completely afterwards; only “Peek from side” keeps one small still image on screen.</p><p>There is always one Lamian notification: Android requires it for apps that keep running in the background. It shows today's counts and has buttons for “Had a glass”, “Stretch now” and “Pause 1 hour”.</p></div>
+    </details>
+    <details id="faq-perm">
+      <summary>Why these permissions?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>“Display over other apps” lets the noodle and bubble appear over other apps; without it, reminders come as notifications. Notifications are used for the status notification and for reminders while the screen is off or you are on a call. Alarms keep water and custom reminders on time. Run at startup lets it start on boot; you can turn that off in Settings.</p><p>It does not need usage access, never reads other apps' content, and has no network permission.</p></div>
+    </details>
+    <details id="faq-privacy">
+      <summary>Where is my data? Is it uploaded?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>Settings, custom reminders and today's log are stored in the app's data on your phone. The app has no network permission, uploads nothing and has no analytics.</p></div>
+    </details>
+    <details id="faq-off">
+      <summary>How do I pause it or turn it off?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>For a break, tap “Pause 1 hour” on the bubble, the home tab or the notification.</p><p>To turn it off completely, switch off “Lamian on” at the top of Settings: no more reminders, the notification and the noodle are put away, and it does not start on boot. Today's log is kept, and everything comes back when you turn it on.</p></div>
+    </details>
+    <details id="faq-update">
+      <summary>How do I update?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>Come back to this page, download lamian.apk again and install it over the old version; settings and logs are kept. The current version is under Settings → About.</p></div>
+    </details>
+    <details id="faq-remove">
+      <summary>How do I remove it?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>Long-press the Lamian icon and choose Uninstall, or remove it under the system's Settings → Apps. Settings and logs are deleted with it.</p></div>
+    </details>
+    <details id="faq-windows">
+      <summary>Is there a desktop version?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>Yes, for Windows: <a href="/lamian/en/">Lamian desktop pet</a>. They are separate apps and do not share settings or logs.</p></div>
+    </details>
+    <details id="faq-official">
+      <summary>Is this the official Noodle?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>No. Lamian for Android is an unofficial Android port, not affiliated with or endorsed by the author of Noodle. The characters, exercise demos and instructions come from Noodle (MIT License); both license texts are in the app under Settings → About → Licenses.</p></div>
+    </details>
+    <details id="faq-health">
+      <summary>Are the stretches right for everyone?<svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+      <div class="faq-a"><p>The stretches are general activity suggestions, not medical advice. Stop if anything hurts or feels wrong; if you have an injury or condition, ask a doctor or physiotherapist first.</p></div>
+    </details>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Privacy: no data collected and no network permission. Settings and logs stay on your phone.</p>
+  <p>Characters, exercise demos and instructions come from <a href="https://github.com/pcybriwsky/noodle" target="_blank" rel="noopener noreferrer">Noodle</a> (© 2026 <a href="https://www.instagram.com/_re_pete/" target="_blank" rel="noopener noreferrer">Pete Cybriwsky<span class="sr-only"> (Instagram, opens in a new tab)</span></a>, MIT License). Lamian for Android is an unofficial Android port, not affiliated with or endorsed by the original author.</p>
+  <p>The stretches are general activity suggestions, not medical advice.</p>
+  <p>This project is not affiliated with Google or Microsoft. Android and Google Play are trademarks of Google LLC; Windows is a trademark of Microsoft.</p>
+  <p>Source: <a href="https://github.com/bb6800182-boop/noodle-pet-android" target="_blank" rel="noopener noreferrer">GitHub</a> (MIT License) · Contact: <a href="mailto:bb6800182@gmail.com">bb6800182@gmail.com</a></p>
+  <p><a href="/en/">More from C520</a></p>
+  <p>© 2026 C520</p>
+</footer>
+<script>
+const openQ = id => { const d = document.getElementById(id); if (d && d.tagName === 'DETAILS') d.open = true; };
+document.querySelectorAll('a[href^="#faq-"]').forEach(a => a.addEventListener('click', () => openQ(a.hash.slice(1))));
+openQ(decodeURIComponent(location.hash.slice(1)));
+</script>
+</body>
+</html>

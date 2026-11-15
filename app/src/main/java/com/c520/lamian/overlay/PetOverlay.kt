@@ -1,5 +1,6 @@
 package com.c520.lamian.overlay
 
+import com.c520.lamian.L
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
@@ -204,7 +205,7 @@ class PetOverlay(private val svc: PetService) {
 
     private fun fill(sp: ReminderSpec, st: AppState, g: Geo) {
         val now = System.currentTimeMillis()
-        val tag = sp.reminder?.let { "提醒・${hhmm(it.minuteOfDay)}" }
+        val tag = sp.reminder?.let { L.t("提醒・${hhmm(it.minuteOfDay)}", "Reminder · ${hhmm(it.minuteOfDay)}") }
         with(bubble) {
             shown = false; done = false; timing = false; stepsOpen = false; peeking = false
             meta = ""; line = ""; spec = ""; steps = emptyList(); tip = ""; link = null; hasHowto = false
@@ -214,29 +215,29 @@ class PetOverlay(private val svc: PetService) {
             peekFront = cache.sheet(character, "peek-front")?.asImageBitmap()
             when (sp) {
                 is ReminderSpec.Water -> {
-                    eyebrow = tag ?: "喝水時間"; meta = "今天第 ${st.today.water + 1} 杯"
-                    title = "喝口水吧！"; line = "起來倒杯水，順便走一走、看看遠方。"
-                    primary = "喝了"; secondary = "晚點"
+                    eyebrow = tag ?: L.t("喝水時間", "Water time"); meta = L.t("今天第 ${st.today.water + 1} 杯", "Glass ${st.today.water + 1} today")
+                    title = L.t("喝口水吧！", "Have some water!"); line = L.t("起來倒杯水，順便走一走、看看遠方。", "Get up for a glass, take a short walk and look into the distance.")
+                    primary = L.t("喝了", "Drank it"); secondary = L.t("晚點", "Later")
                 }
                 is ReminderSpec.Say -> {
-                    eyebrow = "提醒"; meta = hhmm(sp.reminder.minuteOfDay)
-                    title = sp.reminder.text; primary = "知道了"; secondary = "晚點"
+                    eyebrow = L.t("提醒", "Reminder"); meta = hhmm(sp.reminder.minuteOfDay)
+                    title = sp.reminder.text; primary = L.t("知道了", "Got it"); secondary = L.t("晚點", "Later")
                 }
                 ReminderSpec.Visit -> {
-                    eyebrow = "拉麵"; meta = hhmm(now); title = "嗨！"; line = statusLine(st, now)
-                    primary = "現在做一組"; secondary = "喝了一杯"
-                    link = if ((st.pausedUntil ?: 0L) > now) "恢復提醒" else "暫停 1 小時"
+                    eyebrow = L.t("拉麵", "Lamian"); meta = hhmm(now); title = L.t("嗨！", "Hi!"); line = statusLine(st, now)
+                    primary = L.t("現在做一組", "Stretch now"); secondary = L.t("喝了一杯", "Had a glass")
+                    link = if ((st.pausedUntil ?: 0L) > now) L.t("恢復提醒", "Resume") else L.t("暫停 1 小時", "Pause 1 hour")
                 }
                 is ReminderSpec.Stretch -> {
                     val e = sp.exercise
                     val on = Store.enabledExercises(st)
                     val i = on.indexOfFirst { it.id == e.id }
                     val used = st.live.usedSince?.let { ((now - it) / 60_000L).toInt() } ?: 0
-                    eyebrow = tag ?: if (sp.manual) "現在做一組" else "已經滑了 ${max(used, st.settings.intervalMin)} 分鐘"
+                    eyebrow = tag ?: if (sp.manual) L.t("現在做一組", "Stretch now") else L.t("已經滑了 ${max(used, st.settings.intervalMin)} 分鐘", "${max(used, st.settings.intervalMin)} min on the phone")
                     meta = if (tag != null || i < 0) "" else "${i + 1}/${on.size}"
                     title = e.name; line = e.instruction; spec = specLine(e)
                     steps = e.steps; tip = e.tip; hasHowto = e.steps.isNotEmpty()
-                    primary = "開始"; secondary = "晚點"
+                    primary = L.t("開始", "Start"); secondary = L.t("晚點", "Later")
                     totalMs = e.seconds * 1000L; remainingMs = totalMs
                 }
             }
@@ -308,7 +309,7 @@ class PetOverlay(private val svc: PetService) {
         val sv = SpriteView(ctx, cache)
         val root = FrameLayout(ctx).apply {
             addView(sv, FrameLayout.LayoutParams(g.a, g.a, Gravity.BOTTOM))
-            contentDescription = "拉麵"
+            contentDescription = L.t("拉麵", "Lamian")
             setOnClickListener {
                 hop()
                 if (phase == Phase.NUDGE && !closing) restartNudge()
@@ -371,7 +372,7 @@ class PetOverlay(private val svc: PetService) {
         val v = ComposeView(ctx).apply {
             setViewTreeLifecycleOwner(o)
             setViewTreeSavedStateRegistryOwner(o)
-            accessibilityPaneTitle = "拉麵：${bubble.title}"
+            accessibilityPaneTitle = L.t("拉麵：${bubble.title}", "Lamian: ${bubble.title}")
             setContent { LamianTheme { BubbleContent(bubble) } }
         }
         o.resume()
@@ -425,9 +426,9 @@ class PetOverlay(private val svc: PetService) {
             }
             is ReminderSpec.Water, is ReminderSpec.Say -> finish(Result.SNOOZED)
             ReminderSpec.Visit -> {
-                svc.recordWaterNow("補記一杯")
+                svc.recordWaterNow(L.t("補記一杯", "Logged a glass"))
                 stopTimers()
-                celebrate("記上了！", "今天第 ${Store.current.today.water} 杯。", "drink")
+                celebrate(L.t("記上了！", "Logged!"), L.t("今天第 ${Store.current.today.water} 杯。", "Glass ${Store.current.today.water} today."), "drink")
                 leave(true)
             }
         }
@@ -438,8 +439,8 @@ class PetOverlay(private val svc: PetService) {
         if (spec != ReminderSpec.Visit || closing) return
         stopTimers()
         val until = svc.togglePause(quiet = true)
-        if (until != null) celebrate("好，先暫停", "暫停到 ${hhmm(until)}，自訂提醒照常。", "wave")
-        else celebrate("恢復提醒", "接下來照常提醒你。", "wave")
+        if (until != null) celebrate(L.t("好，先暫停", "OK, pausing"), L.t("暫停到 ${hhmm(until)}，自訂提醒照常。", "Paused until ${hhmm(until)}. Custom reminders still come."), "wave")
+        else celebrate(L.t("恢復提醒", "Resume"), L.t("接下來照常提醒你。", "Reminders are back on."), "wave")
         leave(true)
     }
 
@@ -449,8 +450,8 @@ class PetOverlay(private val svc: PetService) {
         val t = Store.current.today
         val total = sp.exercise.seconds * 1000L
         with(bubble) {
-            eyebrow = "跟著做"; meta = "今天第 ${t.stretch + t.walk + 1} 組"
-            primary = "完成"; secondary = "跳過"
+            eyebrow = L.t("跟著做", "Follow along"); meta = L.t("今天第 ${t.stretch + t.walk + 1} 組", "Set ${t.stretch + t.walk + 1} today")
+            primary = L.t("完成", "Done"); secondary = L.t("跳過", "Skip")
             totalMs = total; remainingMs = total; timing = true
         }
         pose(demoPose(sp))
@@ -475,8 +476,8 @@ class PetOverlay(private val svc: PetService) {
         svc.onResult(sp, r)
         val t = Store.current.today
         when (r) {
-            Result.DONE -> { celebrate("做完了！", "今天第 ${t.stretch + t.walk} 組。", "wave"); leave(true) }
-            Result.DRANK -> { celebrate("喝了！", "今天第 ${t.water} 杯。", "drink"); leave(true) }
+            Result.DONE -> { celebrate(L.t("做完了！", "Done!"), L.t("今天第 ${t.stretch + t.walk} 組。", "Set ${t.stretch + t.walk} today."), "wave"); leave(true) }
+            Result.DRANK -> { celebrate(L.t("喝了！", "Drank it!"), L.t("今天第 ${t.water} 杯。", "Glass ${t.water} today."), "drink"); leave(true) }
             else -> leave(false)
         }
     }
@@ -485,7 +486,7 @@ class PetOverlay(private val svc: PetService) {
         phase = Phase.DONE
         with(bubble) {
             timing = false; done = true; stepsOpen = false; peeking = false
-            eyebrow = "已記錄"; meta = ""
+            eyebrow = L.t("已記錄", "Logged"); meta = ""
             this.title = title; this.line = line
         }
         actorRoot?.alpha = 1f
@@ -677,8 +678,8 @@ class PetOverlay(private val svc: PetService) {
                 removeEdge()
                 Store.updateSettings { it.copy(side = side, peekPos = pos) }
                 showEdge()
-                val where = when (pos) { PeekPos.TOP -> "上方"; PeekPos.MIDDLE -> "中間"; PeekPos.BOTTOM -> "下方" }
-                Toast.makeText(svc, "好，改在${if (side == Side.RIGHT) "右" else "左"}邊${where}探頭", Toast.LENGTH_SHORT).show()
+                val where = when (pos) { PeekPos.TOP -> L.t("上方", "top"); PeekPos.MIDDLE -> L.t("中間", "middle"); PeekPos.BOTTOM -> L.t("下方", "bottom") }
+                Toast.makeText(svc, L.t("好，改在${if (side == Side.RIGHT) "右" else "左"}邊${where}探頭", "OK, peeking from the ${if (side == Side.RIGHT) "right" else "left"}, $where"), Toast.LENGTH_SHORT).show()
             }
         }
     }

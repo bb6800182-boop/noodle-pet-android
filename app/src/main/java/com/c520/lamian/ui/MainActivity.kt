@@ -1,5 +1,6 @@
 package com.c520.lamian.ui
 
+import com.c520.lamian.L
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -110,10 +111,10 @@ private fun strokeIcon(vararg paths: String): ImageVector = ImageVector.Builder(
 }.build()
 
 private val TABS = listOf(
-    Tab("今天", strokeIcon("M4 11l8-7 8 7", "M6 10v10h12V10")),
-    Tab("動作", strokeIcon("M10 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M5 9l7 2 7-2M12 11v5l-3 5M12 16l3 5")),
-    Tab("提醒", strokeIcon("M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z", "M10 20a2 2 0 0 0 4 0")),
-    Tab("設定", strokeIcon("M4 7h10M18 7h2M4 17h4M12 17h8", "M14 7a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M8 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0")),
+    Tab(L.t("今天", "Today"), strokeIcon("M4 11l8-7 8 7", "M6 10v10h12V10")),
+    Tab(L.t("動作", "Exercises"), strokeIcon("M10 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M5 9l7 2 7-2M12 11v5l-3 5M12 16l3 5")),
+    Tab(L.t("提醒", "Reminders"), strokeIcon("M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z", "M10 20a2 2 0 0 0 4 0")),
+    Tab(L.t("設定", "Settings"), strokeIcon("M4 7h10M18 7h2M4 17h4M12 17h8", "M14 7a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", "M8 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0")),
 )
 
 @Composable
@@ -128,9 +129,9 @@ fun App(sprites: SpriteCache) {
     }
     Column(Modifier.fillMaxSize().background(T.canvas).statusBarsPadding().imePadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = T.sMd, vertical = T.sSm), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("拉麵", style = T.cardTitle, color = T.ink)
+            Text(L.t("拉麵", "Lamian"), style = T.cardTitle, color = T.ink)
             val d = LocalDate.now()
-            Text("${d.monthValue}月${d.dayOfMonth}日（${WEEK[d.dayOfWeek.value]}）", style = T.caption, color = T.inkSubtle)
+            Text(L.t("${d.monthValue}月${d.dayOfMonth}日（${WEEK[d.dayOfWeek.value]}）", "${WEEK[d.dayOfWeek.value]}, ${d.monthValue}/${d.dayOfMonth}"), style = T.caption, color = T.inkSubtle)
         }
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when (tab) {

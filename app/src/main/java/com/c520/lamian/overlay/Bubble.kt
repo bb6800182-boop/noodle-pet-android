@@ -1,5 +1,6 @@
 package com.c520.lamian.overlay
 
+import com.c520.lamian.L
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -185,7 +186,7 @@ private fun BubbleBox(s: BubbleState) {
             ) {
                 PrimaryButton(s.primary, onClick = s.onPrimary)
                 SecondaryButton(s.secondary, onClick = s.onSecondary)
-                val link = if (s.hasHowto) (if (s.stepsOpen) "收起步驟" else "怎麼做") else s.link
+                val link = if (s.hasHowto) (if (s.stepsOpen) L.t("收起步驟", "Hide steps") else L.t("怎麼做", "How to")) else s.link
                 if (link != null) {
                     Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
                         TextLink(link) { if (s.hasHowto) s.stepsOpen = !s.stepsOpen else s.onLink() }
@@ -207,10 +208,10 @@ private fun BubbleBox(s: BubbleState) {
                 }
                 if (s.tip.isNotEmpty()) {
                     Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(T.rMd)).background(T.surface3).padding(horizontal = T.sSm, vertical = T.sXs)) {
-                        Text("注意　${s.tip}", style = T.caption, color = T.inkMuted)
+                        Text(L.t("注意　${s.tip}", "Tip: ${s.tip}"), style = T.caption, color = T.inkMuted)
                     }
                 }
-                Text("動作只是一般建議；覺得痛或不舒服就停下來。", style = T.caption, color = T.inkSubtle)
+                Text(L.t("動作只是一般建議；覺得痛或不舒服就停下來。", "Exercises are general suggestions. Stop if anything hurts or feels wrong."), style = T.caption, color = T.inkSubtle)
             }
         }
     }

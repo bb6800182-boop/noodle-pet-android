@@ -14,8 +14,8 @@ android {
         // 跟曆刻響一樣從 Android 13 起跳：通知權限、USE_EXACT_ALARM 都有，省掉舊版相容分支
         minSdk = 33
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.1.3"
+        versionCode = 5
+        versionName = "0.2.0"
     }
 
     // 簽章放在專案資料夾旁邊的 noodle-pet-android-signing（不進版控；用 Dropbox 同步，每台電腦都用同一份）：

@@ -1,5 +1,7 @@
 package com.c520.lamian.data
 
+import com.c520.lamian.L
+
 enum class IdleMode { HIDDEN, PEEK }
 enum class Entrance { WALK, DROP }
 enum class Side { RIGHT, LEFT }
@@ -114,9 +116,9 @@ data class AppState(
 val DEMO_POSES = setOf("chin-tuck", "doorway", "scap", "t-ext", "hip-flexor", "neck-side", "calf-raise", "walk")
 
 val CHARACTERS = listOf(
-    Triple("rigatoni", "Toni", "水管麵"),
-    Triple("spaghetti", "Sammy", "直麵"),
-    Triple("penne", "Patty", "筆管麵"),
-    Triple("lasagna", "Lenny", "千層麵"),
-    Triple("sprout", "Sprout", "小芽"),
+    Triple("rigatoni", "Toni", L.t("水管麵", "Rigatoni")),
+    Triple("spaghetti", "Sammy", L.t("直麵", "Spaghetti")),
+    Triple("penne", "Patty", L.t("筆管麵", "Penne")),
+    Triple("lasagna", "Lenny", L.t("千層麵", "Lasagna")),
+    Triple("sprout", "Sprout", L.t("小芽", "Sprout")),
 )

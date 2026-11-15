@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">拉麵</string>
-    <string name="channel_status">常駐通知</string>
-    <string name="channel_status_desc">顯示今天喝了幾杯、做了幾組，並提供補記與暫停按鈕</string>
-    <string name="channel_remind">提醒</string>
-    <string name="channel_remind_desc">螢幕關著或通話中時，用通知提醒喝水與自訂提醒</string>
+    <string name="app_name">Lamian</string>
+    <string name="channel_status">Status</string>
+    <string name="channel_status_desc">Shows today\'s glasses and sets, with buttons to log and pause</string>
+    <string name="channel_remind">Reminders</string>
+    <string name="channel_remind_desc">Reminds you about water and custom reminders while the screen is off or you are on a call</string>
 </resources>

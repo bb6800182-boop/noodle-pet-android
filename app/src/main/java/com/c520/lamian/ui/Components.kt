@@ -1,5 +1,6 @@
 package com.c520.lamian.ui
 
+import com.c520.lamian.L
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -153,14 +154,14 @@ fun Stepper(
     fun tryCommit(t: String) {
         val v = t.trim().toIntOrNull()
         error = when {
-            v == null || v !in range -> "請輸入 ${range.first}–${range.last} 的整數"
+            v == null || v !in range -> L.t("請輸入 ${range.first}–${range.last} 的整數", "Enter a whole number from ${range.first} to ${range.last}")
             else -> extraCheck(v)
         }
         if (error == null && v != null && v != value) onCommit(v)
     }
     Column(horizontalAlignment = Alignment.End) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(T.sXxs)) {
-            StepButton("−", "$label：減少") { val v = ((text.toIntOrNull() ?: value) - 1).coerceIn(range); text = v.toString(); tryCommit(text) }
+            StepButton("−", L.t("$label：減少", "$label: decrease")) { val v = ((text.toIntOrNull() ?: value) - 1).coerceIn(range); text = v.toString(); tryCommit(text) }
             BasicTextField(
                 value = text,
                 onValueChange = { t -> text = t.filter { it.isDigit() }.take(4); tryCommit(text) },
@@ -170,9 +171,9 @@ fun Stepper(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.width(56.dp).height(40.dp).clip(RoundedCornerShape(T.rMd)).background(T.canvas)
                     .border(1.dp, if (error != null) T.danger else T.hairlineStrong, RoundedCornerShape(T.rMd))
-                    .padding(top = 10.dp).semantics { contentDescription = "$label（${range.first}–${range.last} $unit）" },
+                    .padding(top = 10.dp).semantics { contentDescription = L.t("$label（${range.first}–${range.last} $unit）", "$label (${range.first}–${range.last} $unit)") },
             )
-            StepButton("＋", "$label：增加") { val v = ((text.toIntOrNull() ?: value) + 1).coerceIn(range); text = v.toString(); tryCommit(text) }
+            StepButton("＋", L.t("$label：增加", "$label: increase")) { val v = ((text.toIntOrNull() ?: value) + 1).coerceIn(range); text = v.toString(); tryCommit(text) }
             Text(unit, style = T.caption, color = T.inkSubtle, modifier = Modifier.width(30.dp))
         }
         error?.let { Text(it, style = T.caption, color = T.danger, modifier = Modifier.padding(top = T.sXxs)) }

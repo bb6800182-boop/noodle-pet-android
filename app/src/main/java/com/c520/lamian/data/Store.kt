@@ -1,5 +1,6 @@
 package com.c520.lamian.data
 
+import com.c520.lamian.L
 import android.content.Context
 import android.content.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -131,13 +132,13 @@ object Store {
 
     fun recordDone(e: Exercise) = update { s ->
         val t = if (e.id == "walk") s.today.copy(walk = s.today.walk + 1) else s.today.copy(stretch = s.today.stretch + 1)
-        s.copy(today = t, log = (listOf(LogEntry(System.currentTimeMillis(), e.name, "完成", true)) + s.log).take(80),
+        s.copy(today = t, log = (listOf(LogEntry(System.currentTimeMillis(), e.name, L.t("完成", "Done"), true)) + s.log).take(80),
             missed = s.missed?.takeIf { it.exerciseId != e.id })
     }
 
-    fun recordWater(result: String = "喝了") = update { s ->
+    fun recordWater(result: String = L.t("喝了", "Drank it")) = update { s ->
         s.copy(today = s.today.copy(water = s.today.water + 1),
-            log = (listOf(LogEntry(System.currentTimeMillis(), "喝水", result, true)) + s.log).take(80))
+            log = (listOf(LogEntry(System.currentTimeMillis(), L.t("喝水", "Water"), result, true)) + s.log).take(80))
     }
 
     fun setPaused(until: Long?) = update { it.copy(pausedUntil = until) }

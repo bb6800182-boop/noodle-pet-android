@@ -1,5 +1,6 @@
 package com.c520.lamian.service
 
+import com.c520.lamian.L
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -82,16 +83,16 @@ object Notifications {
         val paused = (st.pausedUntil ?: 0L) > now
         return Notification.Builder(context, CH_STATUS)
             .setSmallIcon(R.drawable.ic_stat_lamian)
-            .setContentTitle("今天 ${t.water} 杯水・${t.stretch + t.walk} 組伸展")
+            .setContentTitle(L.t("今天 ${t.water} 杯水・${t.stretch + t.walk} 組伸展", "Today: ${t.water} water · ${t.stretch + t.walk} stretches"))
             .setContentText(statusLine(st, now, forNotification = true))
             .setContentIntent(openApp(context))
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
             .setCategory(Notification.CATEGORY_STATUS)
-            .addAction(action(context, "喝了一杯", ACTION_WATER_NOW))
-            .addAction(action(context, "現在做一組", ACTION_STRETCH_NOW, unlock = true))
-            .addAction(if (paused) action(context, "恢復提醒", ACTION_RESUME) else action(context, "暫停 1 小時", ACTION_PAUSE))
+            .addAction(action(context, L.t("喝了一杯", "Had a glass"), ACTION_WATER_NOW))
+            .addAction(action(context, L.t("現在做一組", "Stretch now"), ACTION_STRETCH_NOW, unlock = true))
+            .addAction(if (paused) action(context, L.t("恢復提醒", "Resume"), ACTION_RESUME) else action(context, L.t("暫停 1 小時", "Pause 1 hour"), ACTION_PAUSE))
             .build()
     }
 
@@ -102,13 +103,13 @@ object Notifications {
     fun postMissed(context: Context, e: Exercise, at: Long, withinMin: Int) = runCatching {
         val n = Notification.Builder(context, CH_STATUS)
             .setSmallIcon(R.drawable.ic_stat_lamian)
-            .setContentTitle("剛剛的「${e.name}」還沒做")
-            .setContentText("$withinMin 分鐘內可以補做")
+            .setContentTitle(L.t("剛剛的「${e.name}」還沒做", "You missed ${e.name}"))
+            .setContentText(L.t("$withinMin 分鐘內可以補做", "You can catch up within $withinMin min"))
             .setWhen(at).setShowWhen(true)
             .setContentIntent(openApp(context))
             .setAutoCancel(true)
             .setTimeoutAfter(withinMin * 60_000L)
-            .addAction(action(context, "補做", ACTION_RECALL, unlock = true))
+            .addAction(action(context, L.t("補做", "Catch up"), ACTION_RECALL, unlock = true))
             .build()
         nm(context)?.notify(ID_MISSED, n)
     }
@@ -129,8 +130,8 @@ object Notifications {
     fun postRemind(context: Context, sp: ReminderSpec, alert: Boolean, inCall: Boolean = false, fallback: Boolean = false) = runCatching {
         val r = sp.reminder
         val key = sp.key
-        val tag = r?.let { "提醒・${hhmm(it.minuteOfDay)}" }
-        val later = if (fallback) "" else "解鎖後麵條會"
+        val tag = r?.let { L.t("提醒・${hhmm(it.minuteOfDay)}", "Reminder · ${hhmm(it.minuteOfDay)}") }
+        val later = if (fallback) "" else L.t("解鎖後麵條會", "After you unlock, the noodle will ")
         val b = Notification.Builder(context, if (alert) CH_REMIND else CH_STATUS)
             .setSmallIcon(R.drawable.ic_stat_lamian)
             .setContentIntent(openApp(context))
@@ -139,30 +140,30 @@ object Notifications {
             .setShowWhen(true)
         when (sp) {
             is ReminderSpec.Water -> {
-                b.setContentTitle(tag ?: "喝水時間")
-                    .setContentText(if (inCall) "通話中，掛斷後麵條再出來提醒你。" else if (fallback) "喝口水吧！" else "喝口水吧！${later}拿著杯子等你。")
+                b.setContentTitle(tag ?: L.t("喝水時間", "Water time"))
+                    .setContentText(if (inCall) L.t("通話中，掛斷後麵條再出來提醒你。", "On a call. The noodle will remind you after you hang up.") else if (fallback) L.t("喝口水吧！", "Have some water!") else L.t("喝口水吧！${later}拿著杯子等你。", "Have some water! ${later}be waiting with a glass."))
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
-                    .addAction(action(context, "喝了", ACTION_DRANK, key))
-                    .addAction(action(context, "晚點", ACTION_SNOOZE, key))
+                    .addAction(action(context, L.t("喝了", "Drank it"), ACTION_DRANK, key))
+                    .addAction(action(context, L.t("晚點", "Later"), ACTION_SNOOZE, key))
             }
             is ReminderSpec.Say -> {
                 b.setContentTitle(sp.reminder.text)
-                    .setContentText(if (inCall) "通話中，掛斷後麵條再出來提醒你。" else tag)
+                    .setContentText(if (inCall) L.t("通話中，掛斷後麵條再出來提醒你。", "On a call. The noodle will remind you after you hang up.") else tag)
                     .setPublicVersion(publicVersion(context, tag))
-                    .addAction(action(context, "知道了", ACTION_ACK, key))
-                    .addAction(action(context, "晚點", ACTION_SNOOZE, key))
+                    .addAction(action(context, L.t("知道了", "Got it"), ACTION_ACK, key))
+                    .addAction(action(context, L.t("晚點", "Later"), ACTION_SNOOZE, key))
             }
             is ReminderSpec.Stretch -> {
                 val e = sp.exercise
                 if (r != null) {
                     b.setContentTitle(r.text)
-                        .setContentText(if (inCall) "通話中，掛斷後麵條再出來帶你做「${e.name}」。" else if (fallback) "${tag}・${e.name}：${e.instruction}" else "${tag}・${later}帶你做「${e.name}」")
+                        .setContentText(if (inCall) L.t("通話中，掛斷後麵條再出來帶你做「${e.name}」。", "On a call. After you hang up the noodle will lead you through ${e.name}.") else if (fallback) L.t("${tag}・${e.name}：${e.instruction}", "$tag · ${e.name}: ${e.instruction}") else L.t("${tag}・${later}帶你做「${e.name}」", "$tag · ${later}lead you through ${e.name}"))
                         .setPublicVersion(publicVersion(context, tag))
                 } else {
-                    b.setContentTitle("起來動一動：${e.name}").setContentText(e.instruction)
+                    b.setContentTitle(L.t("起來動一動：${e.name}", "Time to move: ${e.name}")).setContentText(e.instruction)
                 }
-                if (fallback) b.addAction(action(context, "做完了", ACTION_DONE, key, ex = e.id))
-                b.addAction(action(context, "晚點", ACTION_SNOOZE, key, ex = e.id))
+                if (fallback) b.addAction(action(context, L.t("做完了", "Done"), ACTION_DONE, key, ex = e.id))
+                b.addAction(action(context, L.t("晚點", "Later"), ACTION_SNOOZE, key, ex = e.id))
             }
             ReminderSpec.Visit -> return@runCatching
         }
@@ -172,8 +173,8 @@ object Notifications {
     private fun publicVersion(context: Context, tag: String?): Notification =
         Notification.Builder(context, CH_REMIND)
             .setSmallIcon(R.drawable.ic_stat_lamian)
-            .setContentTitle("拉麵")
-            .setContentText(tag ?: "有一則提醒")
+            .setContentTitle(L.t("拉麵", "Lamian"))
+            .setContentText(tag ?: L.t("有一則提醒", "You have a reminder"))
             .build()
 
     fun cancelRemind(context: Context, sp: ReminderSpec) = runCatching { nm(context)?.cancel(idFor(sp)) }

@@ -1,4 +1,6 @@
-# 拉麵手機版（noodle-pet-android）v0.1.3
+# 拉麵手機版 Lamian for Android（noodle-pet-android）v0.2.0
+
+[English](#english)
 
 手機上的提醒寵物：連續滑手機太久，麵條會從螢幕邊走出來（或垂降下來），親自示範一組伸展、陪你計時；也會提醒你喝水，或照你設的時間出來說一句話。
 
@@ -76,3 +78,14 @@ gradlew.bat testDebugUnitTest
 
 - 以 [MIT 授權](LICENSE)釋出。角色、動作示範與說明來自 [Noodle](https://github.com/pcybriwsky/noodle)（© 2026 Pete Cybriwsky，MIT），原始授權保留在 [`LICENSE-noodle.txt`](LICENSE-noodle.txt)；App 裡也看得到（設定 →「授權資訊」）。
 - 伸展動作只是一般的活動建議，不能取代醫療建議；覺得痛或不舒服就停下來，有傷病請先問醫師或物理治療師。
+
+## English
+
+**Lamian for Android** is a reminder pet for your phone. After too long on the screen, a little noodle walks in from the edge, demonstrates a stretch and times it for you. It also reminds you to drink water, or says a line at the time you set.
+
+- Screen-time, water and custom reminders; eight stretches with demos, plus three more for wrists, fingers and eyes.
+- English and Traditional Chinese (since v0.2.0); the app follows your phone's language.
+- No network permission, no data collection. Free, MIT licensed. Android 13 or later.
+- **Unofficial port**: the characters, exercise demos and instructions come from [Noodle](https://tonitherigatoni.com/) by Pete Cybriwsky ([source](https://github.com/pcybriwsky/noodle), MIT License). Not affiliated with or endorsed by the original author.
+
+Download `lamian.apk` from [Releases](https://github.com/bb6800182-boop/noodle-pet-android/releases/latest). Screenshots and setup steps: https://c520.pages.dev/lamian-android/en/

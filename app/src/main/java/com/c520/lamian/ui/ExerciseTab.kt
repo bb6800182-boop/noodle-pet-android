@@ -1,5 +1,6 @@
 package com.c520.lamian.ui
 
+import com.c520.lamian.L
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -61,19 +62,19 @@ fun ExerciseTab(st: AppState, sprites: SpriteCache) {
         )
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = T.sMd, vertical = T.sXs)) {
-        Hint("提醒時照順序輪流出現；關掉的不會出現。點名稱可以改秒數、說明和順序。")
+        Hint(L.t("提醒時照順序輪流出現；關掉的不會出現。點名稱可以改秒數、說明和順序。", "Exercises take turns in this order when a reminder comes; ones turned off are skipped. Tap a name to change its seconds, text and order."))
         VSpace(T.sSm)
         Group {
-            SettingRow("輪替方式", first = true) {
-                Segmented(listOf(Rotation.ORDER to "依序", Rotation.RANDOM to "隨機"), st.settings.rotation, "輪替方式") { v ->
+            SettingRow(L.t("輪替方式", "Rotation"), first = true) {
+                Segmented(listOf(Rotation.ORDER to L.t("依序", "In order"), Rotation.RANDOM to L.t("隨機", "Random")), st.settings.rotation, L.t("輪替方式", "Rotation")) { v ->
                     Store.updateSettings { it.copy(rotation = v) }
                 }
             }
         }
-        GroupTitle("現有動作（${base.size}）")
+        GroupTitle(L.t("現有動作（${base.size}）", "Exercises (${base.size})"))
         Group { base.forEachIndexed { i, e -> item(e, i == 0) } }
-        GroupTitle("提案：適合滑手機的新動作")
-        Hint("還沒有專屬的示範動畫；打開的話，麵條會站著用文字帶你做。")
+        GroupTitle(L.t("提案：適合滑手機的新動作", "Proposed: new exercises for phone users"))
+        Hint(L.t("還沒有專屬的示範動畫；打開的話，麵條會站著用文字帶你做。", "No demo animation yet. If turned on, the noodle stands and guides you with text."))
         VSpace(T.sXs)
         Group { proposed.forEachIndexed { i, e -> item(e, i == 0) } }
         VSpace(T.sLg)
@@ -95,29 +96,29 @@ private fun ExerciseItem(
             }
             Spacer(Modifier.width(T.sSm))
             Column(
-                Modifier.weight(1f).heightIn(min = T.touch).clickable(role = Role.Button, onClickLabel = if (expanded) "收起" else "修改") { onOpen() }
-                    .semantics { stateDescription = if (expanded) "已展開" else "已收合" },
+                Modifier.weight(1f).heightIn(min = T.touch).clickable(role = Role.Button, onClickLabel = if (expanded) L.t("收起", "Collapse") else L.t("修改", "Edit")) { onOpen() }
+                    .semantics { stateDescription = if (expanded) L.t("已展開", "Expanded") else L.t("已收合", "Collapsed") },
                 verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(e.name, style = T.bodySm.copy(fontWeight = FontWeight.Medium), color = T.ink)
-                    if (e.proposed) { Spacer(Modifier.width(T.sXs)); Pill("沒有示範動畫") }
+                    if (e.proposed) { Spacer(Modifier.width(T.sXs)); Pill(L.t("沒有示範動畫", "No demo")) }
                 }
                 Text(specLine(e), style = T.caption, color = T.inkSubtle)
             }
-            LSwitch(e.enabled, "${e.name}，加入輪替", onToggle)
+            LSwitch(e.enabled, L.t("${e.name}，加入輪替", "${e.name}, in rotation"), onToggle)
         }
-        if (refused) ErrorText("至少要留一個動作在輪替裡")
+        if (refused) ErrorText(L.t("至少要留一個動作在輪替裡", "Keep at least one exercise in rotation"))
         if (expanded) {
             Column(Modifier.padding(start = 60.dp, bottom = T.sSm), verticalArrangement = Arrangement.spacedBy(T.sXs)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("秒數", style = T.bodySm, color = T.ink, modifier = Modifier.weight(1f))
-                    Stepper(e.seconds, Limits.exerciseSeconds, "秒", "${e.name}的秒數") { Store.setExerciseSeconds(e.id, it) }
+                    Text(L.t("秒數", "Seconds"), style = T.bodySm, color = T.ink, modifier = Modifier.weight(1f))
+                    Stepper(e.seconds, Limits.exerciseSeconds, L.t("秒", "sec"), L.t("${e.name}的秒數", "Seconds for ${e.name}")) { Store.setExerciseSeconds(e.id, it) }
                 }
                 SpecField(e)
                 Row(horizontalArrangement = Arrangement.spacedBy(T.sXs)) {
-                    SecondaryButton("往上移") { if (!Store.moveExercise(e.id, -1)) toast(context, "已經是第一個") }
-                    SecondaryButton("往下移") { if (!Store.moveExercise(e.id, 1)) toast(context, "已經是最後一個") }
+                    SecondaryButton(L.t("往上移", "Move up")) { if (!Store.moveExercise(e.id, -1)) toast(context, L.t("已經是第一個", "Already first")) }
+                    SecondaryButton(L.t("往下移", "Move down")) { if (!Store.moveExercise(e.id, 1)) toast(context, L.t("已經是最後一個", "Already last")) }
                 }
             }
         }
@@ -127,9 +128,9 @@ private fun ExerciseItem(
 @Composable
 private fun SpecField(e: Exercise) {
     var text by remember(e.id) { mutableStateOf(e.spec) }
-    val err = if (text.isBlank()) "次數說明不能空白" else null
+    val err = if (text.isBlank()) L.t("次數說明不能空白", "The reps text can't be empty") else null
     Column {
-        Text("次數說明", style = T.bodySm, color = T.ink)
+        Text(L.t("次數說明", "Reps text"), style = T.bodySm, color = T.ink)
         BasicTextField(
             value = text,
             onValueChange = { v ->
@@ -142,7 +143,7 @@ private fun SpecField(e: Exercise) {
             modifier = Modifier.padding(top = T.sXxs).fillMaxWidth().heightIn(min = T.touch).clip(RoundedCornerShape(T.rMd)).background(T.canvas)
                 .border(1.dp, if (err != null) T.danger else T.hairlineStrong, RoundedCornerShape(T.rMd))
                 .padding(horizontal = T.sSm, vertical = T.sSm)
-                .semantics { contentDescription = "${e.name}的次數說明，最多 ${Limits.SPEC_TEXT_MAX} 字" },
+                .semantics { contentDescription = L.t("${e.name}的次數說明，最多 ${Limits.SPEC_TEXT_MAX} 字", "Reps text for ${e.name}, up to ${Limits.SPEC_TEXT_MAX} characters") },
         )
         ErrorText(err)
     }

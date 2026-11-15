@@ -1,5 +1,6 @@
 package com.c520.lamian.overlay
 
+import com.c520.lamian.L
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
@@ -174,7 +175,7 @@ class EdgePetView(
     private var dragging = false
 
     init {
-        contentDescription = "拉麵在旁邊探頭，點一下叫牠出來，拖曳可以換位置"
+        contentDescription = L.t("拉麵在旁邊探頭，點一下叫牠出來，拖曳可以換位置", "Lamian is peeking from the side. Tap to call it out; drag to move it")
         isClickable = true
     }
 

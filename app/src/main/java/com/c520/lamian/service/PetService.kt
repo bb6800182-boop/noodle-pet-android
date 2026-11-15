@@ -1,5 +1,6 @@
 package com.c520.lamian.service
 
+import com.c520.lamian.L
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.app.Service
@@ -186,7 +187,7 @@ class PetService : Service() {
             Alarms.ACTION_REMINDER -> onReminderAlarm(intent.getIntArrayExtra(Alarms.EXTRA_IDS) ?: IntArray(0))
             // 「晚點」是使用者自己按的：單次提醒響過後雖然關掉了，晚點照樣要再提醒（在 App 裡關掉或刪除時會取消）
             Alarms.ACTION_SNOOZE -> Store.reminder(intent.getIntExtra(Alarms.EXTRA_ID, 0))?.let { fire(specFor(it)) }
-            Notifications.ACTION_WATER_NOW -> { recordWaterNow("補記一杯"); toast("記上了，今天第 ${Store.current.today.water} 杯") }
+            Notifications.ACTION_WATER_NOW -> { recordWaterNow(L.t("補記一杯", "Logged a glass")); toast(L.t("記上了，今天第 ${Store.current.today.water} 杯", "Logged. Glass ${Store.current.today.water} today")) }
             Notifications.ACTION_STRETCH_NOW -> manualStretch()
             Notifications.ACTION_PAUSE -> if (!paused()) togglePause(quiet = false)
             Notifications.ACTION_RESUME -> if (paused()) togglePause(quiet = false)
@@ -258,7 +259,7 @@ class PetService : Service() {
         val st = Store.current
         if (st.pausedUntil != null && st.pausedUntil <= now) {
             Store.setPaused(null)
-            Store.addLog("暫停結束", "照常提醒")
+            Store.addLog(L.t("暫停結束", "Pause ended"), L.t("照常提醒", "Reminders on"))
         }
         if (st.missed != null && validMissed(st, now) == null) {
             Store.setMissed(null)
@@ -317,7 +318,7 @@ class PetService : Service() {
     }
 
     fun manualStretch(): Boolean {
-        if (overlay.busy) { toast("麵條正在忙，先處理目前這張"); return false }
+        if (overlay.busy) { toast(L.t("麵條正在忙，先處理目前這張", "The noodle is busy. Finish the current card first")); return false }
         fire(ReminderSpec.Stretch(Store.nextExercise(), manual = true))
         return true
     }
@@ -325,7 +326,7 @@ class PetService : Service() {
     fun recall() {
         val m = validMissed(Store.current, System.currentTimeMillis()) ?: return
         val e = Store.exercise(m.exerciseId) ?: return
-        if (overlay.busy) { toast("麵條正在忙，先處理目前這張"); return }
+        if (overlay.busy) { toast(L.t("麵條正在忙，先處理目前這張", "The noodle is busy. Finish the current card first")); return }
         Store.setMissed(null)
         Notifications.cancelMissed(this)
         fire(ReminderSpec.Stretch(e, manual = true))
@@ -403,11 +404,11 @@ class PetService : Service() {
         val until = if (paused()) null else System.currentTimeMillis() + 60 * 60_000L
         Store.setPaused(until)
         if (until != null) {
-            Store.addLog("暫停 1 小時")
-            if (!quiet) toast("暫停到 ${hhmm(until)}，自訂提醒照常")
+            Store.addLog(L.t("暫停 1 小時", "Pause 1 hour"))
+            if (!quiet) toast(L.t("暫停到 ${hhmm(until)}，自訂提醒照常", "Paused until ${hhmm(until)}. Custom reminders still come"))
         } else {
-            Store.addLog("恢復提醒")
-            if (!quiet) toast("恢復提醒")
+            Store.addLog(L.t("恢復提醒", "Resume"))
+            if (!quiet) toast(L.t("恢復提醒", "Resume"))
         }
         evaluate()
         return until
@@ -477,8 +478,8 @@ class PetService : Service() {
     // ---------------- 結果 ----------------
 
     private fun labelOf(sp: ReminderSpec): String = when (sp) {
-        is ReminderSpec.Water -> "喝水"
-        is ReminderSpec.Say -> "提醒：${sp.reminder.text}"
+        is ReminderSpec.Water -> L.t("喝水", "Water")
+        is ReminderSpec.Say -> L.t("提醒：${sp.reminder.text}", "Reminder: ${sp.reminder.text}")
         is ReminderSpec.Stretch -> sp.exercise.name
         ReminderSpec.Visit -> ""
     }
@@ -511,7 +512,7 @@ class PetService : Service() {
                 }
                 clock.reset(now)
             }
-            Result.DRANK -> recordWaterNow(if (viaNotification) "喝了（通知）" else "喝了")
+            Result.DRANK -> recordWaterNow(if (viaNotification) L.t("喝了（通知）", "Drank (notification)") else L.t("喝了", "Drank it"))
             Result.SNOOZED -> {
                 val ms = s.snoozeMin * 60_000L
                 val rem = sp.reminder
@@ -520,12 +521,12 @@ class PetService : Service() {
                     sp is ReminderSpec.Stretch -> clock.setUsed(now, ((s.intervalMin - s.snoozeMin).coerceAtLeast(0)) * 60_000L)
                     sp is ReminderSpec.Water -> setNextWater(now + ms)
                 }
-                Store.addLog(label, "晚點")
-                toast("好，${s.snoozeMin} 分鐘後再提醒")
+                Store.addLog(label, L.t("晚點", "Later"))
+                toast(L.t("好，${s.snoozeMin} 分鐘後再提醒", "OK, I'll remind you again in ${s.snoozeMin} min"))
             }
             Result.SKIPPED -> {
                 clock.reset(now)
-                Store.addLog(label, "跳過")
+                Store.addLog(label, L.t("跳過", "Skip"))
             }
             Result.IGNORED -> if (sp != ReminderSpec.Visit) {
                 if (sp is ReminderSpec.Stretch) {
@@ -533,19 +534,19 @@ class PetService : Service() {
                     if (s.recallWithinMin > 0) {
                         Store.setMissed(Missed(sp.exercise.id, now))
                         Notifications.postMissed(this, sp.exercise, now, s.recallWithinMin)
-                        toast("先收起來了，${s.recallWithinMin} 分鐘內可以從通知列補做")
+                        toast(L.t("先收起來了，${s.recallWithinMin} 分鐘內可以從通知列補做", "Put away. You can catch up from the notification within ${s.recallWithinMin} min"))
                     }
                 }
-                Store.addLog(label, "沒理")
+                Store.addLog(label, L.t("沒理", "Ignored"))
             }
-            Result.ACK -> Store.addLog(label, "知道了", ok = true)
+            Result.ACK -> Store.addLog(label, L.t("知道了", "Got it"), ok = true)
         }
         evaluate()
     }
 
     /** 給 App「現在試一次」：直接叫麵條出來跑一次這個提醒（不影響排程）。 */
     fun preview(r: Reminder): Boolean {
-        if (overlay.busy) { toast("麵條正在忙，先處理目前這張"); return false }
+        if (overlay.busy) { toast(L.t("麵條正在忙，先處理目前這張", "The noodle is busy. Finish the current card first")); return false }
         show(specFor(r))
         return true
     }

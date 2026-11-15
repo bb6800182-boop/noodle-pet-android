@@ -1,5 +1,6 @@
 package com.c520.lamian.ui
 
+import com.c520.lamian.L
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -62,10 +63,10 @@ fun toast(context: Context, msg: String) = Toast.makeText(context, msg, Toast.LE
 /** 服務正常都在跑；總開關關著就提醒先打開；萬一被系統關掉，先叫起來並告訴使用者稍等。 */
 fun service(context: Context): PetService? = PetService.instance ?: run {
     if (!Store.current.settings.enabled) {
-        toast(context, "拉麵關著，先到「設定」打開")
+        toast(context, L.t("拉麵關著，先到「設定」打開", "Lamian is off. Turn it on in Settings first"))
     } else {
         PetService.start(context)
-        toast(context, "麵條還在準備，等一下再試一次")
+        toast(context, L.t("麵條還在準備，等一下再試一次", "The noodle is still getting ready. Try again in a moment"))
     }
     null
 }
@@ -89,7 +90,7 @@ fun TimeButton(minuteOfDay: Int, label: String, error: Boolean = false, onClick:
         Modifier.heightIn(min = T.touch).clip(RoundedCornerShape(T.rMd)).background(T.canvas)
             .border(1.dp, if (error) T.danger else T.hairlineStrong, RoundedCornerShape(T.rMd))
             .clickable(role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = "$label ${hhmm(minuteOfDay)}，點一下修改" }
+            .semantics { contentDescription = L.t("$label ${hhmm(minuteOfDay)}，點一下修改", "$label ${hhmm(minuteOfDay)}, tap to change") }
             .padding(horizontal = T.sSm),
         contentAlignment = Alignment.Center,
     ) { Text(hhmm(minuteOfDay), style = T.body.copy(fontFeatureSettings = "tnum"), color = T.ink) }
